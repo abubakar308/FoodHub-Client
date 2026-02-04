@@ -1,10 +1,12 @@
-import Image from "next/image";
+import Categories from "@/components/home/Categories";
+import Hero from "@/components/home/Hero";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center  font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        this is main page
+      <Hero />
+      <Categories />
       </main>
     </div>
   );
