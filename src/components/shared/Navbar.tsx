@@ -17,11 +17,14 @@ const navItems = [
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 bg-white border-b">
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
 
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-orange-600">
+        <Link
+          href="/"
+          className="text-xl font-bold tracking-tight text-primary"
+        >
           FoodHub 🍔
         </Link>
 
@@ -31,7 +34,7 @@ export default function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-medium hover:text-orange-600 transition"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               {item.name}
             </Link>
@@ -40,10 +43,11 @@ export default function Navbar() {
 
         {/* Auth buttons */}
         <div className="hidden md:flex gap-3">
-          <Button variant="outline" asChild>
+          <Button variant="ghost" asChild>
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild className="bg-orange-600 hover:bg-orange-700">
+
+          <Button asChild>
             <Link href="/register">Sign up</Link>
           </Button>
         </div>
@@ -51,26 +55,31 @@ export default function Navbar() {
         {/* Mobile menu */}
         <Sheet>
           <SheetTrigger className="md:hidden">
-            <Menu className="h-6 w-6" />
+            <Menu className="h-6 w-6 text-foreground" />
           </SheetTrigger>
-          <SheetContent side="right" className="p-6">
+
+          <SheetContent
+            side="right"
+            className="bg-background border-border p-6"
+          >
             <div className="flex flex-col gap-6">
 
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="text-lg font-medium"
+                  className="text-lg font-medium text-foreground hover:text-primary transition"
                 >
                   {item.name}
                 </Link>
               ))}
 
-              <div className="flex flex-col gap-3 pt-6">
+              <div className="flex flex-col gap-3 pt-6 border-t border-border">
                 <Button variant="outline" asChild>
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild className="bg-orange-600 hover:bg-orange-700">
+
+                <Button asChild>
                   <Link href="/register">Sign up</Link>
                 </Button>
               </div>
