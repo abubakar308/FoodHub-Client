@@ -1,14 +1,18 @@
+import { categoryService } from "@/services/categories.service";
 
-const Categories = () => {
+const Categories = async () => {
 
-    const categories = [
-  "Burgers",
-  "Pizza",
-  "Rice Meals",
-  "Healthy",
-  "Desserts",
-  "Drinks",
-];
+//     const categories = [
+//   "Burgers",
+//   "Pizza",
+//   "Rice Meals",
+//   "Healthy",
+//   "Desserts",
+//   "Drinks",
+// ];
+
+const { data, error } = await categoryService.getCategorys();
+console.log(data.data)
 
     return (
         <div>
@@ -17,12 +21,12 @@ const Categories = () => {
         <h2 className="text-2xl font-semibold mb-8">Popular Categories</h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-          {categories.map((cat) => (
+          {data.data.map((cat) => (
             <div
-              key={cat}
+              key={cat.id}
               className="rounded-xl border border-border p-6 text-center font-medium hover:border-primary hover:text-primary transition cursor-pointer"
             >
-              {cat}
+              {cat.name}
             </div>
           ))}
         </div>
