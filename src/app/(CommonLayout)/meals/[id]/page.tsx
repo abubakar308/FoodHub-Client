@@ -35,7 +35,7 @@ console.log(id)
         <div>
           <span className="text-sm text-green-600">{meal.data.data.category.name}</span>
 
-          <h1 className="mt-2 text-3xl font-bold text-black">{meal.title}</h1>
+          <h1 className="mt-2 text-3xl font-bold text-black">{meal.data.data.title}</h1>
 
           <p className="mt-4 text-gray-600">{meal.data.data.description}</p>
 

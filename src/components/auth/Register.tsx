@@ -7,12 +7,12 @@ import { useState } from "react";
 
 interface Signup1Props {
   heading?: string;
-  logo: {
-    url: string;
-    src: string;
-    alt: string;
-    title?: string;
-  };
+  // logo: {
+  //   url: string;
+  //   src: string;
+  //   alt: string;
+  //   title?: string;
+  // };
   buttonText?: string;
   googleText?: string;
   signupText?: string;
@@ -38,109 +38,146 @@ const SignupPage = ({
   const [loading, setLoading] = useState(false);
 
 
-   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   setLoading(true);
 
-    // const toastId = toast.loading("Creating account...");
-    // setLoading(true);
+  //   try {
+  //     const payload = {
+  //       name,
+  //       email,
+  //       password,
+  //       role,
+  //       // image,
+  //     };
 
-    console.log(name, email, role, password)
-    try {
-      const { data, error } = await authClient.signUp.email({
-        name,
-        email,
-        password,
-        role,   // PROVIDER | CUSTOMER
-        // image,  // image URL
-        // callbackURL: "/", // redirect after signup
-      }as any);
+  //     console.log("Signup payload:", payload);
 
-      if (error) {
-        // toast.error(error.message, { id: toastId });
-        return;
-      }
+  //     const res = await fetch("/api/auth/signup", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
 
-      // toast.success("Account created successfully 🎉", { id: toastId });
-      window.location.href = "/";
+  //     if (!res.ok) {
+  //       throw new Error("Signup failed");
+  //     }
 
-    } catch (err) {
-      // toast.error("Something went wrong", { id: toastId });
-    } finally {
-      setLoading(false);
+  //     // redirect after signup
+  //     window.location.href = "/";
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    const payload = {
+      name,
+      email,
+      password,
+      role, // CUSTOMER | PROVIDER
+      // image: later
+    };
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || "Signup failed");
     }
-  };
 
+    // ✅ redirect to login (correct flow)
+    window.location.href = "/login";
+
+  } catch (error) {
+    console.error("Signup error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
-    <section className={cn("h-screen bg-muted", className)}>
-      <div className="flex h-full items-center justify-center">
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-6 lg:justify-start">
-       
-          <div className="flex w-full max-w-sm min-w-sm flex-col items-center gap-y-4 rounded-md border border-muted bg-background px-6 py-8 shadow-md">
-            {heading && <h1 className="text-xl font-semibold">{heading}</h1>}
-           <form onSubmit={handleSignup}>
-             <Input
-             name="name"
-              type="text"
-              id="name"
-              placeholder="Full Name"
-               value={name}
-                onChange={(e) => setName(e.target.value)}
-              className="text-sm"
-              required
-            />
-            <Input
-              type="email"
-              id="email"
-              placeholder="Email"
-               value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              className="text-sm"
-              required
-            />
-            <Input
-              type="password"
-              id="password"
-              placeholder="Password"
-               value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              className="text-sm"
-              required
-            />
-            {/* <Input
-              type="password"
-              id="password"
-              placeholder="Confirm Password"
-               value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              className="text-sm"
-              required
-            /> */}
-          <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value as UserRole)}
-                className="w-full rounded-md border px-3 py-2"
-              >
-                <option value="CUSTOMER">Customer</option>
-                <option value="PROVIDER">Provider</option>
-              </select>
+ <section className={cn("min-h-screen bg-muted flex items-center justify-center", className)}>
+      <div className="w-full max-w-sm rounded-md border bg-background p-6 shadow-md">
+        {heading && (
+          <h1 className="mb-6 text-center text-xl font-semibold">
+            {heading}
+          </h1>
+        )}
 
-            <Button type="submit" className="w-full">
-              {buttonText}
-            </Button>
-           </form>
-          </div>
-          <div className="flex justify-center gap-1 text-sm text-muted-foreground">
-            <p>{signupText}</p>
-            <a
-              href={signupUrl}
-              className="font-medium text-primary hover:underline"
-            >
-              Login
-            </a>
-          </div>
+        <form onSubmit={handleSignup} className="space-y-4">
+          <Input
+            name="name"
+            placeholder="Full name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+
+          <Input
+            type="email"
+            name="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <Input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value as UserRole)}
+            className="w-full rounded-md border px-3 py-2 text-sm"
+          >
+            <option value="CUSTOMER">Customer</option>
+            <option value="PROVIDER">Provider</option>
+          </select>
+
+          {/* Future: Image upload */}
+          {/* 
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+          />
+          */}
+
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Creating account..." : buttonText}
+          </Button>
+        </form>
+
+        <div className="mt-4 flex justify-center gap-1 text-sm text-muted-foreground">
+          <span>{signupText}</span>
+          <a
+            href={signupUrl}
+            className="font-medium text-primary hover:underline"
+          >
+            Login
+          </a>
         </div>
       </div>
     </section>

@@ -5,27 +5,90 @@ import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
 import { FieldValues } from "react-hook-form";
 
-export const RegisterUser = async (userData: FieldValues) => {
+interface AuthResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    token?: string;
+    accessToken?: string;
+  };
+}
+
+interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  role: "CUSTOMER" | "PROVIDER";
+}
+
+interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+interface JwtPayload {
+  id: string;
+  email: string;
+  role: "CUSTOMER" | "PROVIDER";
+  exp: number;
+}
+
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  message?: string;
+  data?: T;
+}
+
+export const registerUser = async (
+  userData: RegisterPayload
+): Promise<ApiResponse> => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
-    revalidatePath("CUSTOMER");
-    const result = await res.json();
-    console.log(result);
-    const storeCookies = await cookies();
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      }
+    );
+
+    const result: ApiResponse = await res.json();
+
     if (result.success) {
-      storeCookies.set("token", result?.data?.token);
+      // only revalidate public pages
+      revalidatePath("/login");
     }
+
     return result;
-  } catch (error: any) {
-    return Error(error);
+  } catch {
+    return {
+      success: false,
+      message: "Registration failed",
+    };
   }
 };
+
+// export const RegisterUser = async (userData: FieldValues) => {
+//   try {
+//     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/auth/register`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(userData),
+//     });
+//     revalidatePath("CUSTOMER");
+//     const result = await res.json();
+//     console.log(result);
+//     const storeCookies = await cookies();
+//     if (result.success) {
+//       storeCookies.set("token", result?.data?.token);
+//     }
+//     return result;
+//   } catch (error: any) {
+//     return Error(error);
+//   }
+// };
 
 
 export const loginUser = async (userData: FieldValues) => {
