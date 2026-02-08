@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
-import { FieldValues } from "react-hook-form";
 
 interface AuthResponse {
   success: boolean;
@@ -29,9 +28,11 @@ interface LoginPayload {
 interface JwtPayload {
   id: string;
   email: string;
-  role: "CUSTOMER" | "PROVIDER";
+  role: "CUSTOMER" | "PROVIDER" | "ADMIN";
+  iat: number;
   exp: number;
 }
+
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -110,15 +111,18 @@ export const loginUser = async (
   }
 };
 
+export const getCurrentUser = async (): Promise<JwtPayload | null> => {
+  const token = (await cookies()).get("token")?.value;
 
-export const getCurrentUser = async (): Promise<any> => {
-  const accessToken = (await cookies()).get("token")?.value;
-  let decodedData = null;
+  console.log(token)
 
-  if (accessToken) {
-    decodedData = await jwtDecode(accessToken);
-    return decodedData;
-  } else {
+  if (!token) return null;
+
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    return decoded;
+  } catch (error) {
+    console.error("Invalid token");
     return null;
   }
 };

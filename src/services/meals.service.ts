@@ -10,6 +10,7 @@ export const mealsService = {
     } catch (error) {}
     return { data: null, error: { message: "Something wrong " } };
   },
+  
 getMealsByProvider: async function ({ id }: { id: string }) {
   try {
     // Correct backend route

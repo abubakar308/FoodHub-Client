@@ -30,8 +30,11 @@ export default function LoginForm({
 
    const data = await loginUser(payload);
 
-      // redirect after login
-      window.location.href = "/";
+      // redirect after login 
+
+    if(data.success){
+        window.location.href = "/";
+    }
 
     } catch (err) {
       setError("Something went wrong");
