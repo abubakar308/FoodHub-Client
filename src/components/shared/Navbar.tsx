@@ -91,14 +91,12 @@ export default function Navbar({ user }: NavbarProps) {
                     Profile
                   </Link>
                 </DropdownMenuItem>
-
-                {user.role === "PROVIDER" && (
                   <DropdownMenuItem asChild>
-                    <Link href="/provider/dashboard">
+                    <Link href="/dashboard">
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
-                )}
+             
 
                 <DropdownMenuItem
                   onClick={handleLogout}

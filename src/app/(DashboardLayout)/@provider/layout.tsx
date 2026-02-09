@@ -3,9 +3,9 @@ import Link from "next/link";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg p-6 flex flex-col">
+      <aside className="w-64 bg-background shadow-lg p-6 flex flex-col">
         <h1 className="text-2xl font-bold mb-6">
           <Link href="/">FoodHub</Link>
         </h1>
