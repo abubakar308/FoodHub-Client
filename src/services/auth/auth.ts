@@ -1,17 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
+
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
-
-interface AuthResponse {
-  success: boolean;
-  message?: string;
-  data?: {
-    token?: string;
-    accessToken?: string;
-  };
-}
 
 interface RegisterPayload {
   name: string;
@@ -85,16 +76,13 @@ export const loginUser = async (
 
     const result: ApiResponse<{ token: string }> = await res.json();
 
-    if (result.data) {
+    if (result.success && result.data) {
       const cookieStore = await cookies();
-
-      console.log(cookieStore.get)
-
 
       cookieStore.set("token", result.data.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
         path: "/",
         maxAge: 60 * 60 * 24 * 7, // 7 days
       });
@@ -117,14 +105,12 @@ export const getCurrentUser = async (): Promise<JwtPayload | null> => {
   console.log(token)
 
   if (!token) return null;
-
-  try {
-    const decoded = jwtDecode<JwtPayload>(token);
-    return decoded;
-  } catch (error) {
-    console.error("Invalid token");
+ try {
+    return jwtDecode<JwtPayload>(token);
+  } catch {
     return null;
   }
+  
 };
 
 export const logOut = async () => {

@@ -29,13 +29,13 @@ export default async function ProfilePage() {
         <div className="pt-2 border-t mt-2">
             <p className="text-sm text-gray-500">Role</p>
             <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mt-1 font-medium">
-                {user.role || "CUSTOMER"}
+                {user.data.role || "CUSTOMER"}
             </span>
         </div>
 
-        {/* <button className="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">
+        <button className="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">
           Edit Profile
-        </button> */}
+        </button>
       </div>
     </div>
   );
