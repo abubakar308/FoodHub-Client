@@ -1,33 +1,44 @@
 import { cookies } from "next/headers";
-import { JwtPayload } from "jwt-decode";
 
-
-interface NavbarProps {
-  user: JwtPayload | null;
+interface ProfileResponse<T = unknown> {
+  success: boolean;
+  message?: string;
+  data?: T;
 }
 
 export const userService = {
-    getUser: async function () {
+  getUser: async function () {
     try {
-     const token = (await cookies()).get("token")?.value;
+      const token = (await cookies()).get("token")?.value;
 
-const res = await fetch(
-  `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  }
-);
+      // If no token → no user
+      if (!token) {
+        return { success: false, data: null };
+      }
 
-const profile = await res.json();
-console.log("profile", profile)
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        }
+      );
 
-return profile;
+      if (!res.ok) {
+        return { success: false, data: null };
+      }
 
-    } catch (error) {}
-    return { data: null, error: { message: "Something wrong " } };
-  }
-}
+      const profile: ProfileResponse = await res.json();
 
+      return profile;
+    } catch {
+      return {
+        success: false,
+        data: null,
+        message: "Failed to fetch user",
+      };
+    }
+  },
+};

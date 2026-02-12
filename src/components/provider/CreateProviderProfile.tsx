@@ -1,5 +1,5 @@
 "use client";
-
+import { ProviderServerService } from "@/services/provider.service";
 import React, { useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL 
@@ -14,6 +14,11 @@ const CreateProviderProfile = () => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+
+  const provider = ProviderServerService.getProfile();
+
+  console.log(provider)
+
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
