@@ -1,12 +1,26 @@
-import { serverFetch } from "@/lib/serviceFetch";
+"use server"
+
+import { cookies } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export const ProviderServerService = {
   async getProfile() {
     try {
-      const data = await serverFetch(`${API_URL}/providers/dashboard`);
-      return data;
+      const token = (await cookies()).get("token")?.value;
+
+      if (!token) return null;
+
+      const res = await fetch(`${API_URL}/providers/dashboard`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      });
+
+      if (!res.ok) return null;
+
+      return await res.json();
     } catch (error) {
       console.error("Get profile error:", error);
       return null;
@@ -15,7 +29,19 @@ export const ProviderServerService = {
 
   async getMeals() {
     try {
-      const data = await serverFetch(`${API_URL}/provider/meals`);
+      const token = cookies().get("token")?.value;
+      if (!token) return [];
+
+      const res = await fetch(`${API_URL}/provider/meals`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      });
+
+      if (!res.ok) return [];
+
+      const data = await res.json();
       return Array.isArray(data?.data) ? data.data : [];
     } catch (error) {
       console.error("Get meals error:", error);
@@ -25,37 +51,37 @@ export const ProviderServerService = {
 
   async getOrders() {
     try {
-      const data = await serverFetch(`${API_URL}/provider/orders`);
+      const token = cookies().get("token")?.value;
+      if (!token) return [];
+
+      const res = await fetch(`${API_URL}/provider/orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      });
+
+      if (!res.ok) return [];
+
+      const data = await res.json();
       return Array.isArray(data?.data) ? data.data : [];
     } catch (error: any) {
-      if (error.message?.includes("403")) {
-        return [];
-      }
       console.error("Get orders error:", error);
       return [];
     }
   },
 
   async getDashboardStats() {
-    try {
-      const orders = await this.getOrders();
+    const orders = await this.getOrders();
 
-      return {
-        totalOrders: orders.length,
-        activeOrders: orders.filter(
-          (o: any) => o.status !== "DELIVERED" && o.status !== "CANCELLED"
-        ).length,
-        revenue: orders
-          .filter((o: any) => o.status === "DELIVERED")
-          .reduce((sum: number, o: any) => sum + (o.totalAmount || 0), 0),
-      };
-    } catch (error) {
-      console.error("Dashboard stats error:", error);
-      return {
-        totalOrders: 0,
-        activeOrders: 0,
-        revenue: 0,
-      };
-    }
+    return {
+      totalOrders: orders.length,
+      activeOrders: orders.filter(
+        (o: any) => o.status !== "DELIVERED" && o.status !== "CANCELLED"
+      ).length,
+      revenue: orders
+        .filter((o: any) => o.status === "DELIVERED")
+        .reduce((sum: number, o: any) => sum + (o.totalAmount || 0), 0),
+    };
   },
 };
