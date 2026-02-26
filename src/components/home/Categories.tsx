@@ -1,4 +1,4 @@
-import { categoryService } from "@/services/categories.service";
+import { categoryService } from "@/services/catgories";
 
 const Categories = async () => {
 

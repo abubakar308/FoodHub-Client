@@ -1,4 +1,4 @@
-import { userService } from "@/services/user.service";
+import { userService } from "@/services/user";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {

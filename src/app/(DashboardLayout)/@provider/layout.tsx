@@ -30,7 +30,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
             Update & Delete Meals
           </a>
           <a
-            href="/dashboard/add-menu-items"
+            href="/dashboard/add-menu"
             className="text-gray-700 font-medium hover:text-blue-500"
           >
             Add Menu Items

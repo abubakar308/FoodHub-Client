@@ -7,10 +7,11 @@ interface ProfileResponse<T = unknown> {
 }
 
 export const userService = {
-  getUser: async function () {
-    try {
-      const token = (await cookies()).get("token")?.value;
+ getUser: async function () {
+const store = await cookies();
+  const token = store.get("token")?.value;
 
+    try {
       // If no token → no user
       if (!token) {
         return { success: false, data: null };

@@ -8,7 +8,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { logOut } from "@/services/auth/auth";
+import { logOut } from "@/services/auth";
 import {
   DropdownMenu,
   DropdownMenuContent,

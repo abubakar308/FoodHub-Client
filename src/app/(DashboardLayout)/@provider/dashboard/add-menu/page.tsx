@@ -1,8 +1,9 @@
+import CreateMealPage from "@/components/provider/createMeal";
 
 const page = () => {
     return (
         <div>
-            this is meal creatae page
+           <CreateMealPage />
         </div>
     );
 };

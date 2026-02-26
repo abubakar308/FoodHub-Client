@@ -1,23 +1,29 @@
 "use client";
 
-import { ProviderServerService } from "@/services/provider.service";
-import React, { useState } from "react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL 
+import { createProvider, getProfile } from "@/services/provider.service";
+import React, { useEffect, useState } from "react";
 
 const CreateProviderProfile = () => {
   const [formData, setFormData] = useState({
     restaurantName: "",
     address: "",
-    description: "",
-    image: "",
+   phone: ""
   });
 
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [provider, setProvider] = useState(null);
 
-  const provider = ProviderServerService.getProfile();
+
+useEffect(() => {
+  const loadProvider = async () => {
+    const data = await getProfile();
+    setProvider(data);
+  };
+
+  loadProvider();
+}, []);
 
   console.log(provider);
 
@@ -28,43 +34,22 @@ const CreateProviderProfile = () => {
   };
 
   // Handle form submit
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setSuccessMsg("");
-    setErrorMsg("");
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setSuccessMsg("");
+  setErrorMsg("");
 
-    try {
-      const res = await fetch(`${API_URL}/provider/profile`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-        credentials: "include",
-      });
+  const result = await createProvider(formData);
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.message || "Failed to create provider profile");
-      }
+  if (result) {
+    setSuccessMsg("Profile created successfully!");
+  } else {
+    setErrorMsg("Failed to create profile");
+  }
 
-      setSuccessMsg("Provider profile created successfully!");
-      setFormData({
-        restaurantName: "",
-        address: "",
-        description: "",
-        image: "",
-      });
-
-      // Hide toast after 3 seconds
-      setTimeout(() => setSuccessMsg(""), 3000);
-    } catch (err: any) {
-      setErrorMsg(err.message);
-      // Hide error after 5 seconds
-      setTimeout(() => setErrorMsg(""), 5000);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(false);
+};
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-md relative">
@@ -113,10 +98,10 @@ const CreateProviderProfile = () => {
 
         {/* Description */}
         <div>
-          <label className="block font-medium mb-1">Description</label>
+          <label className="block font-medium mb-1">Phone</label>
           <textarea
-            name="description"
-            value={formData.description}
+            name="phone"
+            value={formData.phone}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded px-3 py-2"
             placeholder="Enter description"
@@ -124,18 +109,6 @@ const CreateProviderProfile = () => {
           />
         </div>
 
-        {/* Image URL */}
-        <div>
-          <label className="block font-medium mb-1">Image URL</label>
-          <input
-            type="text"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            placeholder="Enter image URL"
-          />
-        </div>
 
         {/* Submit Button */}
         <button

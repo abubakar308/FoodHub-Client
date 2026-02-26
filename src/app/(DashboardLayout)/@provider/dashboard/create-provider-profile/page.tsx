@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import CreateProviderProfile from "@/components/provider/CreateProviderProfile";
-import { ProviderServerService } from "@/services/provider.service";
+import { getProfile } from "@/services/provider.service";
+
 
 export default async function Page() {
-  const profile = await ProviderServerService.getProfile();
+  const profile = await getProfile();
 
   console.log("this is provider:", profile)
 

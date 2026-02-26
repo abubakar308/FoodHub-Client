@@ -1,6 +1,6 @@
 import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
-import { userService } from "@/services/user.service";
+import { userService } from "@/services/user";
 
 export default async function CommonLayout({
   children,

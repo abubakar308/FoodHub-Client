@@ -100,14 +100,14 @@ export const loginUser = async (
 };
 
 export const getCurrentUser = async (): Promise<JwtPayload | null> => {
-  const token = (await cookies()).get("token")?.value;
-
-  console.log(token)
-
-  if (!token) return null;
- try {
-    return jwtDecode<JwtPayload>(token);
-  } catch {
+  
+ const storeCookie = await cookies();
+  const token = storeCookie.get("token")?.value;
+  let decodedData = null;
+  if (token) {
+    decodedData = await jwtDecode(token);
+    return decodedData;
+  } else {
     return null;
   }
   

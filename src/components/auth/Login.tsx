@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { loginUser, registerUser } from "@/services/auth/auth";
+import { loginUser, registerUser } from "@/services/auth";
 
 export default function LoginForm({
   className,
