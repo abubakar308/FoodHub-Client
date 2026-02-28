@@ -1,9 +1,10 @@
+import AdminCategoriesPage from "@/components/admin/Categories";
 
 
 const page = () => {
     return (
         <div>
-            categories
+           <AdminCategoriesPage />
         </div>
     );
 };

@@ -1,17 +1,10 @@
-import { categoryService } from "@/services/catgories";
+import { getCategories } from "@/services/categories";
+
 
 const Categories = async () => {
 
-//     const categories = [
-//   "Burgers",
-//   "Pizza",
-//   "Rice Meals",
-//   "Healthy",
-//   "Desserts",
-//   "Drinks",
-// ];
 
-const { data, error } = await categoryService.getCategorys();
+const { data, error } = await getCategories();
 console.log(data.data)
 
     return (
