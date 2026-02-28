@@ -1,9 +1,10 @@
+import AdminOrdersPage from "@/components/admin/Orders";
 
 
 const page = () => {
     return (
         <div>
-            manage orsers
+           <AdminOrdersPage />
         </div>
     );
 };
