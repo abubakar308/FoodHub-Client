@@ -99,7 +99,7 @@ export default function CreateMealPage() {
             <Input
               name="image"
               type="text"
-              placeholder="imageUrl"
+              placeholder="https://example.com/image.jpg"
               required
             />
 

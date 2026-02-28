@@ -1,6 +1,6 @@
 "use client";
 
-import { createProvider, getProfile } from "@/services/provider.service";
+import { createProvider, getProfile } from "@/services/provider";
 import React, { useEffect, useState } from "react";
 
 const CreateProviderProfile = () => {

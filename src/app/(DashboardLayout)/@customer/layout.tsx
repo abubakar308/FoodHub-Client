@@ -1,17 +1,30 @@
+
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { Menu, X, ClipboardList, User, LayoutDashboard } from "lucide-react";
 
 const navItems = [
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Manage Menu", href: "/dashboard/add-menu" },
-  { name: "Orders", href: "/dashboard/orders" },
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    name: "My Orders",
+    href: "/dashboard/orders",
+    icon: ClipboardList,
+  },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: User,
+  },
 ];
 
-export default function ProviderLayout({
+export default function CustomerDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -37,7 +50,7 @@ export default function ProviderLayout({
         {/* Logo */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/" className="text-2xl font-bold text-green-600">
-            FoodHub Provider
+            FoodHub
           </Link>
 
           <button className="lg:hidden" onClick={() => setOpen(false)}>
@@ -45,40 +58,42 @@ export default function ProviderLayout({
           </button>
         </div>
 
-        {/* Nav */}
+        {/* Navigation */}
         <nav className="flex flex-col gap-2">
           {navItems.map((item) => {
-            const active = pathname === item.href;
+            const active = pathname === item.href || pathname.startsWith(item.href + "/");
+            const Icon = item.icon;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-4 py-3 rounded-lg font-medium transition-all
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all
                 ${
                   active
                     ? "bg-green-600 text-white shadow"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
+                <Icon size={18} />
                 {item.name}
               </Link>
             );
           })}
         </nav>
 
-        {/* Bottom section */}
+        {/* Bottom links */}
         <div className="mt-auto pt-10">
           <Link
-            href="/profile"
-            className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-medium"
+            href="/"
+            className="block px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 text-sm"
           >
-            Profile
+            ← Back to Home
           </Link>
         </div>
       </aside>
 
-      {/* Main area */}
+      {/* Main section */}
       <div className="flex-1 flex flex-col w-full">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-white shadow-sm px-6 py-4 flex items-center justify-between">
@@ -86,13 +101,16 @@ export default function ProviderLayout({
             <Menu />
           </button>
 
-          <h2 className="text-xl font-semibold text-gray-800">
-            Provider Panel
+          <h2 className="text-lg font-semibold text-gray-800">
+            Customer Dashboard
           </h2>
 
-          <div className="text-sm text-gray-500">
-            Manage your restaurant 🍔
-          </div>
+          <Link
+            href="/dashboard/cart"
+            className="text-sm text-gray-500 hover:text-green-600"
+          >
+            View Cart 🛒
+          </Link>
         </header>
 
         {/* Page content */}

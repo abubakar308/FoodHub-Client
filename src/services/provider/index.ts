@@ -15,6 +15,7 @@ export const createProvider = async (formData: Record<string, unknown>) => {
       body: JSON.stringify(formData),
     });
 
+
     if (!res.ok) return null;
     return await res.json();
   } catch (error) {
@@ -70,7 +71,7 @@ export async function getOrders() {
     const token = cookieStore.get("token")?.value;
     if (!token) return [];
 
-    const res = await fetch(`${API_URL}/provider/orders`, {
+    const res = await fetch(`${API_URL}/providers/orders`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
@@ -83,7 +84,34 @@ export async function getOrders() {
     console.error("Get orders error:", error);
     return [];
   }
-}
+};
+
+
+export const updateProviderOrderStatus = async (
+  orderId: string,
+  status: string
+) => {
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+
+  const res = await fetch(`${API_URL}/provider/order/${orderId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+       Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update order status");
+  }
+
+  return res.json();
+};
 
 export async function getDashboardStats() {
 

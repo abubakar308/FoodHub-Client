@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -7,11 +8,12 @@ import { Menu, X } from "lucide-react";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard" },
-  { name: "Manage Menu", href: "/dashboard/add-menu" },
+  { name: "Users", href: "/dashboard/users" },
   { name: "Orders", href: "/dashboard/orders" },
+  { name: "Categories", href: "/dashboard/categories" },
 ];
 
-export default function ProviderLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -21,7 +23,7 @@ export default function ProviderLayout({
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Mobile overlay */}
+      {/* Mobile Sidebar Overlay */}
       {open && (
         <div
           className="fixed inset-0 bg-black/40 z-40 lg:hidden"
@@ -31,25 +33,26 @@ export default function ProviderLayout({
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static z-50 top-0 left-0 h-full w-64 bg-white shadow-xl p-6 transform transition-transform duration-300
+        className={`fixed z-50 lg:static top-0 left-0 h-full w-64 bg-white shadow-xl p-6 transform transition-transform duration-300
         ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
-        {/* Logo */}
         <div className="flex items-center justify-between mb-8">
           <Link href="/" className="text-2xl font-bold text-green-600">
-            FoodHub Provider
+            FoodHub Admin
           </Link>
 
-          <button className="lg:hidden" onClick={() => setOpen(false)}>
+          {/* Mobile Close Button */}
+          <button
+            className="lg:hidden"
+            onClick={() => setOpen(false)}
+          >
             <X />
           </button>
         </div>
 
-        {/* Nav */}
         <nav className="flex flex-col gap-2">
           {navItems.map((item) => {
             const active = pathname === item.href;
-
             return (
               <Link
                 key={item.href}
@@ -66,36 +69,29 @@ export default function ProviderLayout({
             );
           })}
         </nav>
-
-        {/* Bottom section */}
-        <div className="mt-auto pt-10">
-          <Link
-            href="/profile"
-            className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-medium"
-          >
-            Profile
-          </Link>
-        </div>
       </aside>
 
-      {/* Main area */}
+      {/* Main Section */}
       <div className="flex-1 flex flex-col w-full">
-        {/* Header */}
+        {/* Top Header */}
         <header className="sticky top-0 z-30 bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-          <button className="lg:hidden" onClick={() => setOpen(true)}>
+          <button
+            className="lg:hidden"
+            onClick={() => setOpen(true)}
+          >
             <Menu />
           </button>
 
           <h2 className="text-xl font-semibold text-gray-800">
-            Provider Panel
+            Admin Dashboard
           </h2>
 
           <div className="text-sm text-gray-500">
-            Manage your restaurant 🍔
+            Welcome back 👋
           </div>
         </header>
 
-        {/* Page content */}
+        {/* Content Area */}
         <main className="p-6">{children}</main>
       </div>
     </div>
