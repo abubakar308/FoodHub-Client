@@ -5,6 +5,7 @@ export default async function Page() {
   const meals = await mealsService.getMeals();
   const data = meals?.data?.data || [];
 
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
       

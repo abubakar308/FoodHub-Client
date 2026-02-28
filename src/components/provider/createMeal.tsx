@@ -10,40 +10,62 @@ import { createMeal, getCategories } from "@/services/meal";
 
 export default function CreateMealPage() {
   const router = useRouter();
-
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<any[]>([]);
+
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState<number | "">("");
+  const [categoryId, setCategoryId] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
-  const load = async () => {
-    const data = await getCategories();
-    setCategories(data.data);
+    const loadCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data.data); // backend return data inside `data`
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load categories");
+      }
+    };
+    loadCategories();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!title || !price || !categoryId || !description || !imageUrl) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await createMeal({
+        title,
+        description,
+        price: Number(price),
+        imageUrl,
+        categoryId,
+      });
+
+      toast.success("Meal created successfully 🎉");
+
+      // Reset form
+      setTitle("");
+      setPrice("");
+      setCategoryId("");
+      setDescription("");
+      setImageUrl("");
+
+      router.push("/meals");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to create meal");
+    } finally {
+      setLoading(false);
+    }
   };
-  load();
-}, []);
-
- const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setLoading(true);
-
-  const form = e.currentTarget;
-  const formData = new FormData(form);
-
-  try {
-    await createMeal(formData);   // ✅ await here
-
-    toast.success("Meal created successfully 🎉");
-
-    form.reset();                 // ✅ clear form
-
-    router.push("/meals");
-  } catch (err: any) {
-    console.error(err);
-    toast.error(err?.message || "Failed to create meal");
-  } finally {
-    setLoading(false);
-  }
-};
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -54,67 +76,71 @@ export default function CreateMealPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* Title */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Meal Title</label>
-            <Input name="title" placeholder="Chicken Biryani" required />
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Chicken Biryani"
+              required
+            />
           </div>
 
-          {/* Price + Category */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Price</label>
-              <Input name="price" type="number" placeholder="9.99" required />
+              <Input
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                type="number"
+                placeholder="9.99"
+                required
+              />
             </div>
 
             <div className="space-y-2">
-             <select name="categoryId" className="w-full border rounded px-3 py-2">
-  <option value="">Select category</option>
-
-  {categories.map((cat: any) => (
-    <option key={cat.id} value={cat.id}>
-      {cat.name}
-    </option>
-  ))}
-</select>
+              <label className="text-sm font-medium">Category</label>
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="w-full border rounded px-3 py-2"
+                required
+              >
+                <option value="">Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Description */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Description</label>
             <Textarea
-              name="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Write something delicious about this meal..."
               rows={4}
               required
             />
           </div>
 
-          {/* Image Upload */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium">Meal Image</label>
-
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Image URL</label>
             <Input
-              name="image"
-              type="text"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://example.com/image.jpg"
               required
             />
-
           </div>
 
-          {/* Buttons */}
           <div className="flex items-center justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-            >
+            <Button type="button" variant="outline" onClick={() => router.back()}>
               Cancel
             </Button>
-
             <Button type="submit" disabled={loading}>
               {loading ? "Creating..." : "Create Meal"}
             </Button>

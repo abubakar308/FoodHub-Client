@@ -6,12 +6,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 // Get all categories
 export async function getCategories() {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Unauthorized");
 
     const res = await fetch(`${API_URL}/categories`, {
-      headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
 

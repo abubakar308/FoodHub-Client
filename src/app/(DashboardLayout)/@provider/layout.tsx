@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { getProfile } from "@/services/provider";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard" },
   { name: "Manage Menu", href: "/dashboard/add-menu" },
-  { name: "Orders", href: "/dashboard/orders" },
+  { name: "Orders", href: "/dashboard/orders" }
 ];
 
 export default function ProviderLayout({
@@ -18,6 +19,21 @@ export default function ProviderLayout({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+const [hasProfile, setHasProfile] = useState<boolean | null>(null); // null = loading
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const profile = await getProfile(); // fetch from API
+        setHasProfile(!!profile); // convert to boolean
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+        setHasProfile(false);
+      }
+    }
+    fetchProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -65,6 +81,16 @@ export default function ProviderLayout({
               </Link>
             );
           })}
+
+           {/* Create Provider Profile button */}
+  {!hasProfile && (
+    <Link
+      href="/dashboard/create-provider-profile"
+      className="mt-4 px-4 py-3 bg-yellow-500 text-white rounded-lg font-medium text-center hover:bg-yellow-600"
+    >
+      Create Provider Profile
+    </Link>
+  )}
         </nav>
 
         {/* Bottom section */}

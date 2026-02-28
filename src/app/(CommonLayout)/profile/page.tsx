@@ -1,39 +1,71 @@
-import { userService } from "@/services/user";
-import { redirect } from "next/navigation";
+"use client"; // IMPORTANT: enable client-side rendering
 
-export default async function ProfilePage() {
- const user = await userService.getUser();
+import { useEffect, useState } from "react";
+import { getUser, ProfileResponse } from "@/services/user";
+import { useRouter } from "next/navigation";
 
- console.log(user.data)
+interface UserData {
+  name: string;
+  email: string;
+  role?: string;
+}
 
+export default function ProfilePage() {
+  const [user, setUser] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  if (!user.data) {
-    redirect("/login");
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res: ProfileResponse<UserData> = await getUser();
+
+      if (!res.data) {
+        router.push("/login"); // redirect if no user
+      } else {
+        setUser(res.data);
+      }
+
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-gray-500">Loading profile...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-md mx-auto space-y-4">
-      <h2 className="text-xl font-semibold text-center">My Profile</h2>
+    <div className="max-w-lg mx-auto mt-12 p-6 bg-gray-50 rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-center mb-6">My Profile</h1>
 
-      <div className="bg-white border rounded-lg p-4 space-y-3">
+      <div className="bg-white border rounded-lg p-6 space-y-4 shadow-sm">
+        {/* Name */}
         <div>
-          <p className="text-sm text-gray-500">Name</p>
-          <p className="font-medium">{user.data.name}</p>
+          <p className="text-gray-400 text-sm">Name</p>
+          <p className="text-lg font-medium">{user?.name || "N/A"}</p>
         </div>
 
+        {/* Email */}
         <div>
-          <p className="text-sm text-gray-500">Email</p>
-          <p className="font-medium">{user.data.email}</p>
+          <p className="text-gray-400 text-sm">Email</p>
+          <p className="text-lg font-medium">{user?.email || "N/A"}</p>
         </div>
 
-        <div className="pt-2 border-t mt-2">
-            <p className="text-sm text-gray-500">Role</p>
-            <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mt-1 font-medium">
-                {user.data.role || "CUSTOMER"}
-            </span>
+        {/* Role */}
+        <div>
+          <p className="text-gray-400 text-sm">Role</p>
+          <span className="inline-block bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full font-medium mt-1">
+            {user?.role || "CUSTOMER"}
+          </span>
         </div>
 
-        <button className="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">
+        {/* Edit button */}
+        <button className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold transition-all">
           Edit Profile
         </button>
       </div>

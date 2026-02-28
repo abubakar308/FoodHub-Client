@@ -1,14 +1,31 @@
 import Categories from "@/components/home/Categories";
 import Featured from "@/components/home/Featured";
 import Hero from "@/components/home/Hero";
+import WhyFoodhub from "@/components/home/WhyFoodhub";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center  font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="min-h-screen bg-background">
+
+      {/* Hero should be full width */}
       <Hero />
-      <Categories />
-      <Featured />
+
+      {/* Page container */}
+      <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        {/* spacing between sections */}
+        <section className="py-12 sm:py-16">
+          <Categories />
+        </section>
+
+        <section className="py-12 sm:py-16 border-t">
+          <Featured />
+        </section>
+
+        <section className="py-12 sm:py-16 border-t">
+          <WhyFoodhub />
+        </section>
+
       </main>
     </div>
   );

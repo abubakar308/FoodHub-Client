@@ -44,50 +44,52 @@ export default function LoginForm({
   };
 
   return (
-    <section className={cn("h-screen bg-muted", className)}>
-      <div className="flex h-full items-center justify-center">
-        <div className="w-full max-w-sm rounded-md border bg-background px-6 py-8 shadow-md">
-          <h1 className="mb-6 text-center text-xl font-semibold">
-            Login to FoodHub
-          </h1>
+  <section className={cn("min-h-screen flex items-center justify-center px-4", className)}>
+  <div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-xl">
+    <h1 className="mb-2 text-center text-2xl font-bold text-gray-800">
+      Welcome Back 👋
+    </h1>
+    <p className="mb-6 text-center text-sm text-gray-500">
+      Login to continue to FoodHub
+    </p>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <form onSubmit={handleLogin} className="space-y-4">
+      <Input
+        type="email"
+        placeholder="Email"
+        className="h-11"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
 
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+      <Input
+        type="password"
+        placeholder="Password"
+        className="h-11"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
 
-            {error && (
-              <p className="text-sm text-red-500">{error}</p>
-            )}
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </Button>
-          </form>
+      <Button
+        type="submit"
+        className="w-full h-11 text-base"
+        disabled={loading}
+      >
+        {loading ? "Logging in..." : "Login"}
+      </Button>
+    </form>
 
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            New here?{" "}
-            <Link
-              href="/register"
-              className="font-medium text-primary hover:underline"
-            >
-              Create account
-            </Link>
-          </p>
-        </div>
-      </div>
-    </section>
+    <p className="mt-5 text-center text-sm text-gray-500">
+      New here?{" "}
+      <Link href="/register" className="font-semibold text-green-600 hover:underline">
+        Create account
+      </Link>
+    </p>
+  </div>
+</section>
   );
 }

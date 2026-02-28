@@ -4,6 +4,25 @@ import { cookies } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
+export const addToCart = async (mealId: string) => {
+
+    const cookieStore = await cookies();  
+    const token = cookieStore.get("token")?.value;
+
+  const res = await fetch(
+    `${API_URL}/addtocart`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json", 
+         Authorization: `Bearer ${token}`},
+      body: JSON.stringify({ mealId }),
+    }
+  );
+
+  return res.json();
+};
+
 
 /* ---------------- GET CART ---------------- */
 export async function getCart() {
@@ -23,7 +42,6 @@ export async function getCart() {
 
     const data = await res.json();
 
-    console.log(data)
     return data.data || { items: [], totalPrice: 0 };
   } catch (error) {
     console.error("Get cart error:", error);

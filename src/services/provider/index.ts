@@ -5,12 +5,18 @@ import { cookies } from "next/headers";
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export const createProvider = async (formData: Record<string, unknown>) => {
+
+   const cookieStore = await cookies();   
+    const token = cookieStore.get("token")?.value;
+    if (!token) return null;
+
   try {
     const res = await fetch(`${API_URL}/provider/profile`, {
       method: "POST",
       credentials: "include",   // 🔥 THIS sends cookies automatically
       headers: {
         "Content-Type": "application/json",
+       Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(formData),
     });
@@ -24,6 +30,66 @@ export const createProvider = async (formData: Record<string, unknown>) => {
   }
 };
 
+export interface Meal {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  isAvailable: boolean;
+  createdAt: string;
+  updatedAt: string;
+  providerId: string;
+  categoryId: string;
+}
+
+export interface Provider {
+  id: string;
+  userId: string;
+  restaurantName: string;
+  address: string;
+  phone?: string;
+  meals?: Meal[]; // ✅ Add meals array
+}
+
+export interface ProviderResponse<T = Provider | Provider[]> {
+  success: boolean;
+  data: T;
+}
+
+export async function getProviders(): Promise<ProviderResponse> {
+  try {
+    const res = await fetch(`${API_URL}/providers`, {
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      return { success: false, data: [] };
+    }
+    const data: ProviderResponse = await res.json();
+    return data;
+  } catch {
+    return { success: false, data: [] };
+  }
+}
+
+// ✅ Fetch single provider by ID
+export async function getProvider(id: string): Promise<ProviderResponse<Provider>> {
+  try {
+    const res = await fetch(`${API_URL}/provider/${id}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return { success: false, data: null as any };
+    }
+
+    const data: ProviderResponse<Provider> = await res.json();
+    return data;
+  } catch {
+    return { success: false, data: null as any };
+  }
+}
+
 export async function getProfile() {
   
   try {
@@ -32,7 +98,7 @@ export async function getProfile() {
     if (!token) return null;
 
     const res = await fetch(`${API_URL}/providers/dashboard`, {
-      headers: { Authorization: token },
+      headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
 

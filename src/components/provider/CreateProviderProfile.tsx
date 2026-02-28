@@ -99,14 +99,15 @@ const handleSubmit = async (e: React.FormEvent) => {
         {/* Description */}
         <div>
           <label className="block font-medium mb-1">Phone</label>
-          <textarea
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            placeholder="Enter description"
-            required
-          />
+          <input
+  type="text"
+  name="phone"
+  value={formData.phone}
+  onChange={handleChange}
+  className="w-full border border-gray-300 rounded px-3 py-2"
+  placeholder="Enter phone"
+  required
+/>
         </div>
 
 

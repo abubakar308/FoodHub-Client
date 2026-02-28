@@ -112,75 +112,64 @@ const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
 };
 
   return (
- <section className={cn("min-h-screen bg-muted flex items-center justify-center", className)}>
-      <div className="w-full max-w-sm rounded-md border bg-background p-6 shadow-md">
-        {heading && (
-          <h1 className="mb-6 text-center text-xl font-semibold">
-            {heading}
-          </h1>
-        )}
+<section className="min-h-screen flex items-center justify-center px-4">
+  <div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-xl">
+    <h1 className="mb-2 text-center text-2xl font-bold text-gray-800">
+      Create Account 🚀
+    </h1>
+    <p className="mb-6 text-center text-sm text-gray-500">
+      Join FoodHub today
+    </p>
 
-        <form onSubmit={handleSignup} className="space-y-4">
-          <Input
-            name="name"
-            placeholder="Full name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+    <form onSubmit={handleSignup} className="space-y-4">
+      <Input
+        placeholder="Full name"
+        className="h-11"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+      />
 
-          <Input
-            type="email"
-            name="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      <Input
+        type="email"
+        placeholder="Email"
+        className="h-11"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
 
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+      <Input
+        type="password"
+        placeholder="Password"
+        className="h-11"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
 
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as UserRole)}
-            className="w-full rounded-md border px-3 py-2 text-sm"
-          >
-            <option value="CUSTOMER">Customer</option>
-            <option value="PROVIDER">Provider</option>
-          </select>
+      <select
+        value={role}
+        onChange={(e) => setRole(e.target.value as UserRole)}
+        className="w-full h-11 rounded-md border px-3 text-sm"
+      >
+        <option value="CUSTOMER">Customer</option>
+        <option value="PROVIDER">Provider</option>
+      </select>
 
-          {/* Future: Image upload */}
-          {/* 
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-          />
-          */}
+      <Button className="w-full h-11 text-base" disabled={loading}>
+        {loading ? "Creating..." : "Create Account"}
+      </Button>
+    </form>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Creating account..." : buttonText}
-          </Button>
-        </form>
-
-        <div className="mt-4 flex justify-center gap-1 text-sm text-muted-foreground">
-          <span>{signupText}</span>
-          <a
-            href={signupUrl}
-            className="font-medium text-primary hover:underline"
-          >
-            Login
-          </a>
-        </div>
-      </div>
-    </section>
+    <p className="mt-5 text-center text-sm text-gray-500">
+      Already have an account?{" "}
+      <a href="/login" className="font-semibold text-green-600 hover:underline">
+        Login
+      </a>
+    </p>
+  </div>
+</section>
   );
 };
 

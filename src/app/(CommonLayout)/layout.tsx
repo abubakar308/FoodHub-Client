@@ -1,6 +1,6 @@
 import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
-import { userService } from "@/services/user";
+import { CartProvider } from "@/context/CartContext";
 
 export default async function CommonLayout({
   children,
@@ -8,14 +8,15 @@ export default async function CommonLayout({
   children: React.ReactNode;
 }>) {
 
-  
- const user = await userService.getUser();
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Navbar user={user} />
+     <CartProvider>
+       <Navbar  />
       <main className="flex-1">{children}</main>
       <Footer />
+     </CartProvider>
     </div>
   );
 }

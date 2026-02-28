@@ -16,13 +16,6 @@ interface LoginPayload {
   password: string;
 }
 
-interface JwtPayload {
-  id: string;
-  email: string;
-  role: "CUSTOMER" | "PROVIDER" | "ADMIN";
-  iat: number;
-  exp: number;
-}
 
 
 export interface ApiResponse<T = unknown> {
@@ -97,10 +90,10 @@ export const loginUser = async (
   }
 };
 
-export const getCurrentUser = async (): Promise<JwtPayload | null> => {
-  
- const storeCookie = await cookies();
+export const getCurrentUser = async () => {
+  const storeCookie = await cookies();
   const token = storeCookie.get("token")?.value;
+
   let decodedData = null;
   if (token) {
     decodedData = await jwtDecode(token);
@@ -108,7 +101,6 @@ export const getCurrentUser = async (): Promise<JwtPayload | null> => {
   } else {
     return null;
   }
-  
 };
 
 export const logOut = async () => {
