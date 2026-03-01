@@ -30,15 +30,15 @@ export default function CreateMealPage() {
   const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
-    const loadCategories = async () => {
+    const fetchCategories = async () => {
       try {
         const data = await getCategories();
-        setCategories(data.data || []);
+        setCategories(Array.isArray(data) ? data : data?.data || []);
       } catch (err: any) {
-        toast.error(err.message || "Failed to load categories");
+        setLoading(false);
       }
     };
-    loadCategories();
+    fetchCategories();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -59,7 +59,7 @@ export default function CreateMealPage() {
       });
 
       toast.success("Meal created successfully 🎉");
-      router.push("/dashboard/manage-menu"); // আপনার ম্যানেজ মেনু পেজে রিডাইরেক্ট
+      router.push("/dashboard/manage-menu"); 
     } catch (err: any) {
       toast.error(err.message || "Failed to create meal");
     } finally {
@@ -130,7 +130,7 @@ export default function CreateMealPage() {
                   >
                     <option value="">Select category</option>
                     {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      <option key={cat.id} value={cat.id}>{cat?.name}</option>
                     ))}
                   </select>
                 </div>

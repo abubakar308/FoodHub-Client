@@ -10,7 +10,6 @@ type Category = {
   name: string;
 };
 
-// ক্যাটাগরির জন্য কিছু সফট কালার কম্বিনেশন
 const colors = [
   "bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-600",
   "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-600",
