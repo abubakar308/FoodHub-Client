@@ -12,7 +12,7 @@ export default async function Featured() {
   const featuredMeals = meals.slice(0, 4);
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
+    <section className="mx-auto max-w-7xl px-6">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
         <div className="space-y-3">

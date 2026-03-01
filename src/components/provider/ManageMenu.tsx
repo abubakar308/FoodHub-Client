@@ -17,6 +17,7 @@ import {
 import { getProfile } from "@/services/provider";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { deleteMeal } from "@/services/meal";
 
 export default function ManageMealsPage() {
   const [meals, setMeals] = useState<any[]>([]);
@@ -27,9 +28,6 @@ export default function ManageMealsPage() {
     async function loadMeals() {
       try {
         const response = await getProfile();
-
-        console.log(response)
-       
         setMeals(response?.data?.meals || []);
       } catch (error) {
         toast.error("Failed to load your menu items");
@@ -40,6 +38,29 @@ export default function ManageMealsPage() {
     loadMeals();
   }, []);
 
+  // Sonner Toast দিয়ে কনফার্মেশন ও ডিলিট লজিক
+  const handleDelete = async (id: string, title: string) => {
+    toast(`Are you sure you want to delete "${title}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            const res = await deleteMeal(id);
+            if (res?.success) {
+              toast.success(`${title} removed successfully`);
+              setMeals((prev) => prev.filter((meal) => meal.id !== id));
+            } else {
+              toast.error(res?.message || "Deletion failed");
+            }
+          } catch (error) {
+            toast.error("An unexpected error occurred");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
+  };
+
   const filteredMeals = meals.filter((meal) =>
     meal.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -48,100 +69,98 @@ export default function ManageMealsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <Loader2 className="h-10 w-10 text-green-600 animate-spin mb-4" />
-        <p className="text-slate-500 font-medium">Loading your delicious menu...</p>
+        <p className="text-slate-500 font-medium">Accessing your kitchen...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-     
+    <div className="space-y-8 p-4">
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Manage Menu</h1>
-          <p className="text-slate-500 text-sm">You have total {meals.length} items in your kitchen</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Manage Menu</h1>
+          <p className="text-slate-500 text-sm">You have total {meals.length} items</p>
         </div>
         <Link href="/dashboard/add-menu">
-          <Button className="bg-green-600 hover:bg-green-700 text-white rounded-xl px-6 py-6 shadow-lg shadow-green-100 transition-all">
+          <Button className="bg-green-600 hover:bg-green-700 text-white rounded-2xl px-6 py-6 shadow-lg transition-all active:scale-95">
             <Plus className="mr-2 h-5 w-5" /> Add New Meal
           </Button>
         </Link>
       </div>
 
+      {/* Search Bar */}
       <div className="relative group max-w-md">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-600 transition-colors" size={20} />
         <input
           type="text"
-          placeholder="Search meals by title..."
-          className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
+          placeholder="Search meals..."
+          className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-[20px] outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
-    
       {filteredMeals.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-[32px] border border-dashed border-slate-300">
-          <div className="bg-slate-50 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Utensils className="h-10 w-10 text-slate-300" />
-          </div>
+        <div className="text-center py-20 bg-white rounded-[40px] border-2 border-dashed border-slate-100">
+          <Utensils className="h-12 w-12 text-slate-200 mx-auto mb-4" />
           <h3 className="text-lg font-bold text-slate-800">No Meals Found</h3>
-          <p className="text-slate-500 mb-6">Start adding your first meal to show up here.</p>
-          <Link href="/dashboard/add-menu">
-            <Button variant="outline" className="rounded-xl border-green-200 text-green-700 hover:bg-green-50">
-              Create First Meal
-            </Button>
-          </Link>
+          <p className="text-slate-400 mb-6">Start your menu by adding a meal</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredMeals.map((meal) => (
-            <div key={meal.id} className="group bg-white rounded-[24px] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-             
-              <div className="relative h-52 w-full overflow-hidden">
+            <div key={meal.id} className="group bg-white rounded-[32px] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden">
+              
+              <div className="relative h-56 w-full overflow-hidden">
                 <Image
-                  src={meal.imageUrl}
+                  src={meal.imageUrl || "/placeholder.jpg"}
                   alt={meal.title}
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute top-4 left-4">
-                   <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md shadow-sm ${
-                     meal.isAvailable ? "bg-green-500/90 text-white" : "bg-rose-500/90 text-white"
-                   }`}>
-                     {meal.isAvailable ? (
-                       <><CheckCircle2 size={12} /> Active</>
-                     ) : (
-                       <><XCircle size={12} /> Out of Stock</>
-                     )}
-                   </div>
+                  <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest backdrop-blur-md text-white ${
+                    meal.isAvailable ? "bg-green-500/90" : "bg-rose-500/90"
+                  }`}>
+                    {meal.isAvailable ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                    {meal.isAvailable ? "Active" : "Hidden"}
+                  </div>
                 </div>
               </div>
 
-              {/* কন্টেন্ট */}
-              <div className="p-5">
+              <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-extrabold text-slate-800 text-lg leading-tight truncate flex-1 pr-2">
+                  <h3 className="font-black text-slate-800 text-xl leading-tight truncate flex-1 pr-2">
                     {meal.title}
                   </h3>
-                  <p className="text-green-600 font-black text-lg">৳{meal.price}</p>
+                  <p className="text-green-600 font-black text-xl tracking-tighter">৳{meal.price}</p>
                 </div>
-                
-                <p className="text-slate-500 text-sm line-clamp-2 mb-6 min-h-[40px]">
+                <p className="text-slate-500 text-sm line-clamp-2 mb-8 min-h-[40px] leading-relaxed">
                   {meal.description}
                 </p>
 
-               
+                {/* Actions */}
                 <div className="flex items-center gap-2">
-                  <Button variant="secondary" className="flex-1 bg-slate-50 hover:bg-green-50 hover:text-green-700 border border-slate-100 rounded-xl font-bold transition-colors">
-                    <Edit2 size={16} className="mr-2" /> Edit
+                 
+                  <Link href={`/dashboard/manage-menu/${meal.id}`} className="flex-1">
+                    <Button 
+                      variant="secondary" 
+                      className="w-full bg-slate-50 hover:bg-green-600 hover:text-white border border-slate-100 rounded-2xl font-black py-6 transition-all"
+                    >
+                      <Edit2 size={18} className="mr-2" /> Edit
+                    </Button>
+                  </Link>
+                  
+                  <Button 
+                    variant="ghost" 
+                    className="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-2xl h-12 w-12 transition-all"
+                    onClick={() => handleDelete(meal.id, meal.title)}
+                  >
+                    <Trash2 size={20} />
                   </Button>
                   
-                  <Button variant="ghost" className="bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded-xl transition-all">
-                    <Trash2 size={18} />
-                  </Button>
-                  
-                  <Button variant="ghost" className="text-slate-400 hover:text-slate-900 rounded-xl">
+                  <Button variant="ghost" className="text-slate-300 hover:text-slate-900 rounded-2xl h-12 w-12">
                     <MoreHorizontal size={20} />
                   </Button>
                 </div>

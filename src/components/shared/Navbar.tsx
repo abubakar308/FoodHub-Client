@@ -91,7 +91,9 @@ export default function Navbar() {
 
         {/* Right Side (Desktop) */}
         <div className="hidden md:flex items-center gap-4">
-          {/* Cart Icon */}
+   
+          {
+            user && (
           <Link href="/dashboard/cart" className="relative p-2 hover:bg-accent rounded-full transition-colors">
             <ShoppingCart className="h-5 w-5 text-foreground" />
             {cartCount > 0 && (
@@ -101,8 +103,11 @@ export default function Navbar() {
             )}
           </Link>
 
+            )
+          }
           {!user ? (
             <div className="flex items-center gap-2">
+
               <Button variant="ghost" asChild>
                 <Link href="/login">Login</Link>
               </Button>
@@ -156,17 +161,7 @@ export default function Navbar() {
               ))}
 
               <div className="pt-6 border-t border-border flex flex-col gap-4">
-                {/* Mobile Cart */}
-                <Link href="/dashboard/cart" className="flex items-center justify-between text-lg font-medium">
-                  <div className="flex items-center gap-2">
-                    <ShoppingCart className="h-5 w-5" /> Cart
-                  </div>
-                  {cartCount > 0 && (
-                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      {cartCount} items
-                    </span>
-                  )}
-                </Link>
+          
 
                 {!user ? (
                   <>
@@ -179,6 +174,18 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
+
+                   {/* Mobile Cart */}
+                <Link href="/dashboard/cart" className="flex items-center justify-between text-lg font-medium">
+                  <div className="flex items-center gap-2">
+                    <ShoppingCart className="h-5 w-5" /> Cart
+                  </div>
+                  {cartCount > 0 && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {cartCount} items
+                    </span>
+                  )}
+                </Link>
                     <Link href="/profile" className="flex items-center gap-2 text-lg font-medium">
                       <User className="h-5 w-5" /> Profile
                     </Link>

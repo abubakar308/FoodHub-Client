@@ -11,12 +11,14 @@ import {
   updateCartItemQuantity,
 } from "@/services/order";
 import { useRouter } from "next/navigation";
+import { Trash2, Plus, Minus, ShoppingBag, Loader2, MapPin } from "lucide-react";
 
 export default function CartPage() {
   const router = useRouter();
 
   const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const [showModal, setShowModal] = useState(false);
   const [address, setAddress] = useState("");
@@ -40,6 +42,7 @@ export default function CartPage() {
     if (!cart || newQty < 1) return;
 
     try {
+      setUpdatingId(itemId);
       await updateCartItemQuantity(itemId, newQty);
 
       const updatedItems = cart.items.map((i: any) =>
@@ -47,33 +50,35 @@ export default function CartPage() {
       );
 
       const updatedTotal = updatedItems.reduce(
-        (acc: number, i: any) =>
-          acc + i.quantity * Number(i.priceAtAddTime),
+        (acc: number, i: any) => acc + i.quantity * Number(i.priceAtAddTime),
         0
       );
 
       setCart({ ...cart, items: updatedItems, totalPrice: updatedTotal });
     } catch (err: any) {
       toast.error(err.message || "Failed to update quantity");
+    } finally {
+      setUpdatingId(null);
     }
   };
 
   const handleRemove = async (itemId: string) => {
     try {
-      await removeCartItem(itemId);
-
-      const updatedItems = cart.items.filter((i: any) => i.id !== itemId);
-
-      const updatedTotal = updatedItems.reduce(
-        (acc: number, i: any) =>
-          acc + i.quantity * Number(i.priceAtAddTime),
-        0
-      );
-
-      setCart({ ...cart, items: updatedItems, totalPrice: updatedTotal });
-      toast.success("Item removed");
+      toast.promise(removeCartItem(itemId), {
+        loading: 'Removing item...',
+        success: () => {
+          const updatedItems = cart.items.filter((i: any) => i.id !== itemId);
+          const updatedTotal = updatedItems.reduce(
+            (acc: number, i: any) => acc + i.quantity * Number(i.priceAtAddTime),
+            0
+          );
+          setCart({ ...cart, items: updatedItems, totalPrice: updatedTotal });
+          return 'Item removed from cart';
+        },
+        error: 'Could not remove item',
+      });
     } catch (err: any) {
-      toast.error(err.message || "Failed to remove item");
+      console.error(err);
     }
   };
 
@@ -86,13 +91,11 @@ export default function CartPage() {
     try {
       setOrdering(true);
       await createOrder(address);
-
       toast.success("Order placed successfully!");
-
       setShowModal(false);
       setCart(null);
-
       router.push("/dashboard/orders");
+      router.refresh();
     } catch (err: any) {
       toast.error(err.message || "Order failed");
     } finally {
@@ -102,124 +105,155 @@ export default function CartPage() {
 
   if (loading)
     return (
-      <p className="p-6 text-center text-gray-500 text-lg">Loading cart...</p>
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <Loader2 className="h-10 w-10 text-green-600 animate-spin mb-4" />
+        <p className="text-slate-500 font-medium">Loading your cart items...</p>
+      </div>
     );
 
   if (!cart || cart.items.length === 0)
     return (
-      <p className="p-6 text-center text-gray-500 text-lg">
-        Your cart is empty
-      </p>
+      <div className="flex flex-col items-center justify-center min-h-[500px] space-y-4">
+        <div className="bg-slate-100 p-6 rounded-full">
+          <ShoppingBag size={48} className="text-slate-300" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-800">Your cart is empty</h2>
+        <p className="text-slate-500">Looks like you haven't added anything yet.</p>
+        <Button onClick={() => router.push("/")} className="rounded-xl bg-green-600">
+          Browse Meals
+        </Button>
+      </div>
     );
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-
-      <div className="space-y-6">
-        {cart.items.map((item: any) => (
-          <div
-            key={item.id}
-            className="flex flex-col md:flex-row bg-white shadow rounded-xl p-4 gap-4"
-          >
-            <div className="w-full md:w-48 h-40 relative rounded-lg overflow-hidden border">
-              <Image
-                src={item.meal.imageUrl}
-                alt={item.meal.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            <div className="flex-1 flex flex-col justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">
-                  {item.meal.title}
-                </h2>
-                <p className="text-gray-500 text-sm mt-1 line-clamp-2">
-                  {item.meal.description}
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-4 gap-4">
-                <div className="flex items-center gap-2">
-                  <button
-                    className="px-3 py-1 bg-gray-100 rounded"
-                    onClick={() =>
-                      handleQuantityChange(item.id, item.quantity - 1)
-                    }
-                  >
-                    -
-                  </button>
-                  <span className="px-4 py-1 border rounded">
-                    {item.quantity}
-                  </span>
-                  <button
-                    className="px-3 py-1 bg-gray-100 rounded"
-                    onClick={() =>
-                      handleQuantityChange(item.id, item.quantity + 1)
-                    }
-                  >
-                    +
-                  </button>
-                </div>
-
-                <p className="font-semibold text-green-600">
-                  ${item.quantity * Number(item.priceAtAddTime)}
-                </p>
-
-                <button
-                  onClick={() => handleRemove(item.id)}
-                  className="text-red-500 text-sm"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+    <div className="mx-auto max-w-5xl px-4 py-10 space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Shopping Cart</h1>
+        <span className="text-slate-500 font-medium">{cart.items.length} Items</span>
       </div>
 
-      {/* Checkout Bar */}
-      <div className="mt-8 bg-white p-6 rounded-xl shadow flex justify-between items-center">
-        <h2 className="text-2xl font-bold">
-          Total: ${cart.totalPrice}
-        </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Items List */}
+        <div className="lg:col-span-2 space-y-4">
+          {cart.items.map((item: any) => (
+            <div
+              key={item.id}
+              className="flex items-center bg-white border border-slate-100 shadow-sm rounded-3xl p-4 gap-4 transition-hover hover:shadow-md"
+            >
+              <div className="w-24 h-24 relative rounded-2xl overflow-hidden border flex-shrink-0">
+                <Image
+                  src={item.meal.imageUrl}
+                  alt={item.meal.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
 
-        <Button onClick={() => setShowModal(true)}>
-          Proceed to Checkout
-        </Button>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg font-bold text-slate-800 truncate">
+                  {item.meal.title}
+                </h2>
+                <p className="text-green-600 font-bold">৳{item.priceAtAddTime}</p>
+                
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                    <button
+                      disabled={updatingId === item.id || item.quantity <= 1}
+                      className="p-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all disabled:opacity-30"
+                      onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span className="w-8 text-center font-bold text-sm">
+                      {item.quantity}
+                    </span>
+                    <button
+                      disabled={updatingId === item.id}
+                      className="p-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all disabled:opacity-30"
+                      onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => handleRemove(item.id)}
+                    className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Order Summary */}
+        <div className="lg:col-span-1">
+          <div className="bg-white border border-slate-100 rounded-[32px] p-6 shadow-sm sticky top-24">
+            <h2 className="text-xl font-bold mb-6">Order Summary</h2>
+            <div className="space-y-4 border-b pb-6">
+              <div className="flex justify-between text-slate-500">
+                <span>Subtotal</span>
+                <span>৳{cart.totalPrice}</span>
+              </div>
+              <div className="flex justify-between text-slate-500">
+                <span>Delivery Fee</span>
+                <span className="text-green-600 font-medium">Free</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center py-6">
+              <span className="text-lg font-bold">Total</span>
+              <span className="text-2xl font-black text-green-600">৳{cart.totalPrice}</span>
+            </div>
+            <Button 
+              className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-lg font-bold shadow-lg shadow-green-100"
+              onClick={() => setShowModal(true)}
+            >
+              Checkout Now
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Checkout Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-          <div className="bg-white w-full max-w-md rounded-2xl p-6 space-y-4 shadow-xl">
-            <h2 className="text-xl font-semibold">Enter Delivery Address</h2>
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-white w-full max-w-md rounded-[32px] p-8 space-y-6 shadow-2xl scale-in-animation">
+            <div className="flex items-center gap-3">
+              <div className="bg-green-100 p-3 rounded-2xl text-green-600">
+                <MapPin size={24} />
+              </div>
+              <h2 className="text-2xl font-bold">Delivery Info</h2>
+            </div>
 
-            <textarea
-              rows={4}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-green-500 outline-none"
-              placeholder="Full delivery address..."
-            />
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Full Address</label>
+              <textarea
+                rows={4}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full border-2 border-slate-100 rounded-2xl p-4 focus:border-green-500 focus:ring-0 outline-none transition-all resize-none font-medium"
+                placeholder="House #, Street name, Area..."
+              />
+            </div>
 
-            <div className="flex justify-end gap-3">
-              <button
+            <div className="flex gap-3">
+              <Button
+                variant="ghost"
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-lg border"
+                className="flex-1 h-14 rounded-2xl font-bold"
               >
                 Cancel
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleOrder}
                 disabled={ordering}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg"
+                className="flex-1 h-14 bg-green-600 hover:bg-green-700 rounded-2xl font-bold shadow-lg shadow-green-100"
               >
-                {ordering ? "Placing..." : "Confirm Order"}
-              </button>
+                {ordering ? <Loader2 className="animate-spin" /> : "Confirm Order"}
+              </Button>
             </div>
           </div>
         </div>

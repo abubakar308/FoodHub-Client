@@ -1,16 +1,11 @@
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin} from "lucide-react";
+import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
 const footerLinks = {
-  company: [
-    { name: "About Us", href: "/about" },
-    { name: "Careers", href: "/careers" },
-    { name: "Partner with Us", href: "/partner" },
-  ],
   platform: [
     { name: "Browse Meals", href: "/meals" },
     { name: "Top Restaurants", href: "/providers" },
-    { name: "Special Offers", href: "/offers" },
   ],
   legal: [
     { name: "Privacy Policy", href: "/privacy" },
@@ -36,14 +31,13 @@ export default function Footer() {
               We bridge the gap between talented chefs and hungry foodies.
             </p>
             <div className="flex gap-4">
-              <SocialIcon icon={<Facebook size={18} />} />
-              <SocialIcon icon={<Instagram size={18} />} />
-              <SocialIcon icon={<Twitter size={18} />} />
+              <SocialIcon icon={<FaFacebook size={18} />} />
+              <SocialIcon icon={<FaInstagram size={18} />} />
+              <SocialIcon icon={<FaTwitter size={18} />} />
             </div>
           </div>
 
           {/* 2. Quick Links */}
-          <FooterColumn title="Company" links={footerLinks.company} />
           <FooterColumn title="Platform" links={footerLinks.platform} />
 
           {/* 3. Support & Contact */}

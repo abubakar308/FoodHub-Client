@@ -155,3 +155,20 @@ export async function getOrderDetails(id: string) {
   const data = await res.json();
   return data.data;
 }
+
+export const createReview = async (reviewData: { mealId: string; rating: number; comment: string }) => {
+
+  const cookieStore = await cookies();  
+    const token = cookieStore.get("token")?.value;
+    if (!token) return null;
+
+  const res = await fetch(`${API_URL}/review`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token} }`, 
+    },
+    body: JSON.stringify(reviewData),
+  });
+  return res.json();
+};

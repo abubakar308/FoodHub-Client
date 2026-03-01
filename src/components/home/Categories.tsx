@@ -42,7 +42,7 @@ export default function Categories() {
 
   if (loading)
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-3">
+      <div className="flex flex-col items-center justify-center gap-3">
         <Loader2 className="animate-spin text-green-600" size={32} />
         <p className="text-slate-400 font-medium animate-pulse">Finding fresh categories...</p>
       </div>
@@ -50,7 +50,7 @@ export default function Categories() {
 
   if (error)
     return (
-      <div className="text-center py-10 bg-rose-50 rounded-3xl border border-rose-100 mx-4">
+      <div className="text-center bg-rose-50 rounded-3xl border border-rose-100 mx-4">
         <p className="text-rose-500 font-bold">{error}</p>
       </div>
     );

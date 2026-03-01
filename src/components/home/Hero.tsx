@@ -38,7 +38,7 @@ const Hero = () => {
             className="h-full w-full object-cover"
           />
           {/* Gradient Overlay for better contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent md:from-black/70 md:via-black/20" />
+          <div className="absolute inset-0 bg-gradient-to- from-black/80 via-black/40 to-transparent md:from-black/70 md:via-black/20" />
         </div>
       ))}
 

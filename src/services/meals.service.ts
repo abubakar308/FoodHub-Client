@@ -25,7 +25,7 @@ getMealsByProvider: async function ({ id }: { id: string }) {
 }
 
 ,
-  // services/meals.service.ts
+
 
   async getMealById(id: string) {
     try {

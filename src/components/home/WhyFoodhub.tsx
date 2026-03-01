@@ -35,7 +35,7 @@ const WhyFoodhub = () => {
   ];
 
   return (
-    <section className="container mx-auto px-6 py-20 lg:py-28">
+    <section className="container mx-auto px-6">
       {/* Section Header */}
       <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
         <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
