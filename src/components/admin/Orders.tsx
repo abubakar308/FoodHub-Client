@@ -4,26 +4,23 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { getAllOrders } from "@/services/admin";
+import { 
+  Package, 
+  MapPin, 
+  User, 
+  Store, 
+  Calendar, 
+  ArrowRight, 
+  CheckCircle2, 
+  Clock, 
+  XCircle 
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-type Meal = {
-  id: string;
-  title: string;
-  imageUrl: string;
-};
-
-type OrderItem = {
-  id: string;
-  quantity: number;
-  price: string;
-  meal: Meal;
-};
-
-type Provider = {
-  restaurantName: string;
-  address: string;
-  phone: string;
-};
-
+// Types remain the same as your provided code...
+type Meal = { id: string; title: string; imageUrl: string; };
+type OrderItem = { id: string; quantity: number; price: string; meal: Meal; };
+type Provider = { restaurantName: string; address: string; phone: string; };
 type Order = {
   id: string;
   status: string;
@@ -32,10 +29,7 @@ type Order = {
   address: string;
   items: OrderItem[];
   provider: Provider;
-  customer: {
-    name: string;
-    email: string;
-  };
+  customer: { name: string; email: string; };
 };
 
 export default function AdminOrdersPage() {
@@ -56,90 +50,144 @@ export default function AdminOrdersPage() {
     loadOrders();
   }, []);
 
-  const statusColor = (status: string) => {
+  const getStatusDetails = (status: string) => {
     switch (status) {
       case "DELIVERED":
-        return "bg-green-100 text-green-700";
+        return { color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: CheckCircle2 };
       case "PENDING":
-        return "bg-yellow-100 text-yellow-700";
+        return { color: "bg-amber-100 text-amber-700 border-amber-200", icon: Clock };
       case "CANCELLED":
-        return "bg-red-100 text-red-700";
+        return { color: "bg-rose-100 text-rose-700 border-rose-200", icon: XCircle };
       default:
-        return "bg-gray-100 text-gray-700";
+        return { color: "bg-slate-100 text-slate-700 border-slate-200", icon: Package };
     }
   };
 
-  if (loading)
-    return <p className="text-center text-gray-500 p-10 text-lg">Loading orders...</p>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      <p className="text-slate-500 animate-pulse">Fetching global orders...</p>
+    </div>
+  );
 
-  if (!orders.length)
-    return <p className="text-center text-gray-500 p-10 text-lg">No orders found.</p>;
+  if (!orders.length) return (
+    <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+      <Package className="mx-auto h-12 w-12 text-slate-300 mb-4" />
+      <p className="text-xl font-semibold text-slate-600">No orders found.</p>
+    </div>
+  );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
-      <h1 className="text-3xl font-bold text-gray-800">All Orders</h1>
-
-      {orders.map((order) => (
-        <div
-          key={order.id}
-          className="bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6 space-y-6"
-        >
-          {/* Header: Provider + Customer */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div>
-              <p className="font-semibold text-lg">{order.provider.restaurantName}</p>
-              <p className="text-gray-500 text-sm">{order.provider.address}</p>
-              <p className="text-gray-500 text-sm">Customer: {order.customer.name} ({order.customer.email})</p>
-            </div>
-
-            <div className="flex flex-col md:items-end gap-1">
-              <span
-                className={`px-3 py-1 text-sm rounded-full w-fit ${statusColor(order.status)}`}
-              >
-                {order.status}
-              </span>
-              <p className="text-gray-500 text-sm">{new Date(order.createdAt).toLocaleString()}</p>
-            </div>
-          </div>
-
-          {/* Items */}
-          <div className="space-y-4">
-            {order.items.map((item) => (
-              <div
-                key={item.id}
-                className="flex gap-4 items-center border rounded-xl p-3"
-              >
-                <div className="relative w-20 h-20 rounded-lg overflow-hidden border">
-                  <Image
-                    src={item.meal.imageUrl}
-                    alt={item.meal.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium">{item.meal.title}</p>
-                  <p className="text-gray-500 text-sm">Qty: {item.quantity}</p>
-                </div>
-                <p className="font-semibold text-green-600">${Number(item.price) * item.quantity}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Footer */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between border-t pt-4 gap-3">
-            <div>
-              <p className="text-sm text-gray-500">Delivery Address</p>
-              <p className="font-medium">{order.address}</p>
-            </div>
-
-            <div className="text-right">
-              <p className="text-sm text-gray-500">Total</p>
-              <p className="text-xl font-bold text-green-600">${order.totalPrice}</p>
-            </div>
-          </div>
+    <div className="max-w-6xl mx-auto space-y-8 py-6">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Order Management</h1>
+          <p className="text-slate-500">Overview of all system transactions</p>
         </div>
-      ))}
+        <div className="bg-white px-4 py-2 rounded-2xl shadow-sm border border-slate-100">
+          <span className="text-sm text-slate-500 font-medium">Total Volume: </span>
+          <span className="text-lg font-bold text-green-600">
+            ${orders.reduce((acc, curr) => acc + Number(curr.totalPrice), 0).toLocaleString()}
+          </span>
+        </div>
+      </header>
+
+      <div className="grid gap-6">
+        {orders.map((order) => {
+          const { color, icon: StatusIcon } = getStatusDetails(order.status);
+          
+          return (
+            <div key={order.id} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden hover:border-green-300 transition-all duration-300">
+              {/* Top Banner: Order ID & Status */}
+              <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white p-2 rounded-lg shadow-sm">
+                    <Package className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Order ID</span>
+                    <p className="text-sm font-mono font-bold text-slate-700 leading-none mt-1">#{order.id.slice(-8).toUpperCase()}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                   <div className="hidden sm:flex items-center gap-2 text-slate-500 text-xs font-medium">
+                      <Calendar size={14} />
+                      {new Date(order.createdAt).toLocaleDateString()}
+                   </div>
+                   <span className={cn("flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold border", color)}>
+                     <StatusIcon size={14} />
+                     {order.status}
+                   </span>
+                </div>
+              </div>
+
+              {/* Main Info Body */}
+              <div className="p-6 grid md:grid-cols-2 gap-8">
+                {/* Left Side: Parties */}
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                      <Store className="text-blue-600 h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Restaurant</p>
+                      <p className="font-bold text-slate-800">{order.provider.restaurantName}</p>
+                      <p className="text-sm text-slate-500">{order.provider.address}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-full bg-purple-50 flex items-center justify-center shrink-0">
+                      <User className="text-purple-600 h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Customer</p>
+                      <p className="font-bold text-slate-800">{order.customer.name}</p>
+                      <p className="text-sm text-slate-500 font-medium">{order.customer.email}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: Items Summary */}
+                <div className="bg-slate-50 rounded-2xl p-4 space-y-3">
+                   <p className="text-xs font-bold text-slate-400 uppercase mb-2">Order Items</p>
+                   {order.items.map((item) => (
+                     <div key={item.id} className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg overflow-hidden border bg-white shrink-0">
+                          <Image src={item.meal.imageUrl} alt={item.meal.title} width={40} height={40} className="object-cover h-full w-full" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-slate-700 truncate">{item.meal.title}</p>
+                          <p className="text-xs text-slate-500 font-medium">x{item.quantity} · ${item.price}</p>
+                        </div>
+                        <p className="text-sm font-bold text-slate-800">${(Number(item.price) * item.quantity).toFixed(2)}</p>
+                     </div>
+                   ))}
+                </div>
+              </div>
+
+              {/* Footer: Address & Price */}
+              <div className="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-slate-600">
+                  <MapPin size={16} className="text-rose-500 shrink-0" />
+                  <span className="text-sm font-medium">{order.address}</span>
+                </div>
+                
+                <div className="flex items-center gap-4 ml-auto">
+                   <div className="text-right">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase">Grand Total</p>
+                      <p className="text-2xl font-black text-green-600 leading-none">${order.totalPrice}</p>
+                   </div>
+                   <button className="bg-slate-900 text-white p-2 rounded-xl hover:bg-green-600 transition-colors">
+                      <ArrowRight size={20} />
+                   </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
