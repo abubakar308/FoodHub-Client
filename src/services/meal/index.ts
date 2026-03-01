@@ -87,8 +87,41 @@ export const updateMeal = async (mealId: string, meal: {
 }
 
 
-export const getCategories = async () => {
-  const res = await fetch(`${API_URL}/categories`);
-  if (!res.ok) throw new Error("Failed to fetch categories");
-  return res.json();
+export const getAllMeals = async () => {
+  try {
+    const res = await fetch(`${API_URL}/meals`);
+    const data = await res.json();
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error: { message: error.message || "Something went wrong" } };
+  }
+};
+
+
+export const getMealsByProvider = async (id: string) => {
+  try {
+    const res = await fetch(`${API_URL}/meals/provider/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch meals for this provider");
+    
+    const data = await res.json();
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error: { message: error.message || "Something went wrong" } };
+  }
+};
+
+export const getMealById = async (id: string) => {
+  try {
+   
+    const res = await fetch(`${API_URL}/meal/${id}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) throw new Error("Meal not found");
+
+    const data = await res.json();
+    return { data, error: null };
+  } catch (error: any) {
+    return { data: null, error: { message: error.message || "Something went wrong" } };
+  }
 };

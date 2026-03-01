@@ -1,8 +1,8 @@
 import MealCard from "@/components/meals/MealCard";
-import { mealsService } from "@/services/meals.service";
+import { getAllMeals } from "@/services/meal";
 
 export default async function Page() {
-  const meals = await mealsService.getMeals();
+  const meals = await getAllMeals();
   const data = meals?.data?.data || [];
 
 

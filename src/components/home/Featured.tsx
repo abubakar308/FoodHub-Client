@@ -1,11 +1,11 @@
 import Link from "next/link";
 import MealCard from "../meals/MealCard";
-import { mealsService } from "@/services/meals.service";
 import { ArrowRight, Sparkles, Utensils } from "lucide-react";
+import { getAllMeals } from "@/services/meal";
 
 export default async function Featured() {
  
-  const mealsResponse = await mealsService.getMeals();
+  const mealsResponse = await getAllMeals();
  
   const meals = mealsResponse?.data?.data || [];
 

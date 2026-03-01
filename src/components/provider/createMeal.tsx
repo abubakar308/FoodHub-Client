@@ -14,8 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { createMeal, getCategories } from "@/services/meal";
+import { createMeal} from "@/services/meal";
 import Image from "next/image";
+import { getCategories } from "@/services/categories";
 
 export default function CreateMealPage() {
   const router = useRouter();

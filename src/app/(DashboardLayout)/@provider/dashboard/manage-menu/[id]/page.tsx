@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getCategories, updateMeal } from "@/services/meal";
-import { mealsService } from "@/services/meals.service";
+import { getCategories } from "@/services/categories";
+import { getAllMeals, updateMeal } from "@/services/meal";
 
 type Category = {
   id: string;
@@ -38,7 +38,7 @@ export default function EditMealPage() {
         const cats = await getCategories();
         setCategories(cats.data || []);
 
-        const mealsRes = await mealsService.getMeals();
+        const mealsRes = await getAllMeals();
         const currentMeal = mealsRes?.data?.data?.find((m: Meal) => m.id === mealId);
         setMeal(currentMeal || null);
       } catch (err) {

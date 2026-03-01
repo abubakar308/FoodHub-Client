@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { mealsService } from "@/services/meals.service";
 import { addToCart } from "@/services/order";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Loader2, ShoppingCart, UtensilsCrossed, ArrowLeft, Star, User } from "lucide-react";
 import Link from "next/link";
+import { getMealById } from "@/services/meal";
 
 // --- Types Updated ---
 type Review = {
@@ -26,7 +26,7 @@ type Meal = {
   imageUrl?: string;
   category?: { name: string };
   provider?: { restaurantName: string };
-  reviews: Review[]; // রিভিউ টাইপ যোগ করা হয়েছে
+  reviews: Review[]; 
 };
 
 export default function MealDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -41,7 +41,7 @@ export default function MealDetailsPage({ params }: { params: Promise<{ id: stri
     const fetchMeal = async () => {
       try {
         setLoading(true);
-        const res = await mealsService.getMealById(id);
+        const res = await getMealById(id);
         const mealData = res?.data?.data || res?.data;
         setMeal(mealData || null);
       } catch (err) {
@@ -54,7 +54,6 @@ export default function MealDetailsPage({ params }: { params: Promise<{ id: stri
     if (id) fetchMeal();
   }, [id]);
 
-  // গড় রেটিং ক্যালকুলেশন
   const averageRating = meal?.reviews?.length 
     ? (meal.reviews.reduce((acc, rev) => acc + rev.rating, 0) / meal.reviews.length).toFixed(1)
     : null;
@@ -85,7 +84,7 @@ export default function MealDetailsPage({ params }: { params: Promise<{ id: stri
       <div className="bg-slate-100 p-6 rounded-full mb-6 text-slate-400">
         <UtensilsCrossed size={48} />
       </div>
-      <h2 className="text-3xl font-black text-slate-900 tracking-tight">Dish Not Found</h2>
+      <h2 className="text-3xl font-black text-slate-900 tracking-tight">Meal Not Found</h2>
       <Button asChild className="mt-8 bg-green-600 rounded-2xl font-bold">
         <Link href="/meals"><ArrowLeft className="mr-2" size={18} /> Back to Menu</Link>
       </Button>
