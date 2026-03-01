@@ -1,36 +1,145 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍽️ FoodHub Frontend
 
-## Getting Started
+Frontend client for the **FoodHub Meal Marketplace** platform.  
+Users can browse meals, place orders, and providers can manage their meals through a modern dashboard UI.
 
-First, run the development server:
+🔗 **Live Site:** https://foodhub-client-six.vercel.app/  
+
+---
+
+# 🚀 Features
+
+### 👤 User Features
+✔ Browse all meals  
+✔ Search, filter & sort meals  
+✔ View meal details  
+✔ Add to cart & place orders  
+✔ Authentication system (Login/Register)  
+
+### 👨‍🍳 Provider Features
+✔ Add new meals  
+✔ Update own meals  
+✔ Delete meals  
+✔ Manage orders  
+✔ Provider dashboard  
+
+### 👑 Admin Features
+✔ Manage users  
+✔ Control meals  
+✔ Monitor orders  
+✔ Dashboard analytics  
+
+---
+
+# 🛠️ Tech Stack
+
+- **Next.js (App Router)**
+- **React.js**
+- **TypeScript**
+- **Tailwind CSS**
+- **ShadCN UI**
+- **React Query**
+- **JWT Authentication**
+- **Vercel Deployment**
+
+---
+
+# 📦 Installation & Setup
+
+### 1️⃣ Clone repository
+
+```bash
+git clone https://github.com/your-username/foodhub-client.git
+cd foodhub-client
+```
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+```
+
+### 3️⃣ Setup environment variables
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_API_URL=https://food-hub-server-five.vercel.app/api
+```
+
+### 4️⃣ Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App will run on:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+# 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+ ┣ app/
+ ┣ components/
+ ┣ services/
+ ┣ hooks/
+ ┣ lib/
+ ┗ types/
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 🔐 Authentication Flow
 
-## Deploy on Vercel
+1. User logs in or registers  
+2. Backend returns JWT token  
+3. Token stored in cookies/local storage  
+4. Protected routes verified via middleware  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 🌍 Deployment
+
+This frontend is deployed on **Vercel**.
+
+To deploy manually:
+
+```bash
+vercel --prod
+```
+
+---
+
+# 📸 Screenshots
+
+*(Add dashboard / homepage screenshots here for better GitHub appearance)*
+
+---
+
+# 🤝 Contribution
+
+Pull requests are welcome.  
+For major changes, open an issue first to discuss improvements.
+
+---
+
+# 👨‍💻 Author
+
+**Md Abu Bakar Siddique**  
+Full Stack MERN Developer
+
+- LinkedIn: *(add link)*
+- Portfolio: *(add link)*
+
+---
+
+# ⭐ Support
+
+If you like this project, give it a ⭐ on GitHub  
+and share feedback to improve it further!
