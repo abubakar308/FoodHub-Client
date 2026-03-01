@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import Image from "next/image";
+import { ChevronRight, PlayCircle, Star } from "lucide-react";
 
 const images = [
   "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600",
@@ -14,23 +14,22 @@ const images = [
 const Hero = () => {
   const [index, setIndex] = useState(0);
 
-  // auto slide every 4s
   useEffect(() => {
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
-    }, 4000);
+    }, 5000);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <section className="relative h-[70vh] min-h-520px w-full overflow-hidden">
+    <section className="relative h-[85vh] w-full overflow-hidden bg-slate-900">
       
-      {/* Background Images */}
+      {/* Background Slideshow */}
       {images.map((img, i) => (
         <div
           key={i}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            i === index ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+            i === index ? "opacity-100 scale-105" : "opacity-0 scale-100"
           }`}
         >
           <img
@@ -38,45 +37,71 @@ const Hero = () => {
             alt="Food Banner"
             className="h-full w-full object-cover"
           />
-
-          {/* dark overlay for text readability */}
-          <div className="absolute inset-0 bg-black/50" />
+          {/* Gradient Overlay for better contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent md:from-black/70 md:via-black/20" />
         </div>
       ))}
 
-      {/* Content */}
-      <div className="relative z-10 flex h-full items-center justify-center text-center px-4">
-        <div className="max-w-3xl text-white space-y-6">
+      {/* Hero Content */}
+      <div className="relative z-10 flex h-full items-center px-6 md:px-12 lg:px-24 container mx-auto">
+        <div className="max-w-3xl space-y-8">
+          
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-white text-sm font-medium animate-bounce-slow">
+            <Star className="text-yellow-400 fill-yellow-400" size={16} />
+            <span>Trusted by 5000+ Foodies in Dhaka</span>
+          </div>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-            Fresh meals from local providers, delivered fast 🍽️
+          <h1 className="text-5xl md:text-7xl font-black text-white leading-[1.1] tracking-tight">
+            Deliciousness <br /> 
+            <span className="text-green-500">Delivered</span> at <br />
+            Your Doorstep.
           </h1>
 
-          <p className="text-lg md:text-xl text-white/90">
-            Discover homemade and restaurant meals near you.  
-            Order easily and enjoy quality food anytime.
+          <p className="text-lg md:text-xl text-slate-200 max-w-xl leading-relaxed">
+            From local kitchens to your table. Experience fresh, homemade, and restaurant-quality meals with just a few clicks.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-            <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
-              <Link href="/meals">Browse Meals</Link>
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 h-14 px-8 rounded-2xl text-lg font-bold shadow-xl shadow-green-900/20 transition-all hover:translate-y-[-2px]">
+              <Link href="/meals" className="flex items-center gap-2">
+                Order Now <ChevronRight size={20} />
+              </Link>
             </Button>
 
-            <Button asChild variant="outline" size="lg" className="bg-white/90 hover:bg-white">
-              <Link href="/register">Join as Provider</Link>
+            <Button asChild variant="outline" size="lg" className="bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white hover:text-black h-14 px-8 rounded-2xl text-lg font-bold transition-all">
+              <Link href="/register" className="flex items-center gap-2">
+                <PlayCircle size={20} /> Become a Provider
+              </Link>
             </Button>
           </div>
 
+          {/* Quick Stats */}
+          <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/10 max-w-md">
+            <div>
+              <p className="text-2xl font-bold text-white">50+</p>
+              <p className="text-xs text-slate-400 uppercase font-black">Categories</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">120+</p>
+              <p className="text-xs text-slate-400 uppercase font-black">Providers</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">15m</p>
+              <p className="text-xs text-slate-400 uppercase font-black">Avg Delivery</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Indicators */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+      {/* Progressive Indicators */}
+      <div className="absolute bottom-10 left-6 md:left-24 flex gap-3 z-10">
         {images.map((_, i) => (
-          <div
+          <button
             key={i}
-            className={`h-2 w-8 rounded-full transition ${
-              i === index ? "bg-white" : "bg-white/40"
+            onClick={() => setIndex(i)}
+            className={`h-1.5 transition-all duration-500 rounded-full ${
+              i === index ? "w-12 bg-green-500" : "w-6 bg-white/30 hover:bg-white/50"
             }`}
           />
         ))}

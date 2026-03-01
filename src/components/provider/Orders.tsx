@@ -3,12 +3,12 @@
 import { getOrders, updateProviderOrderStatus } from "@/services/provider";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { 
-  ShoppingBag, 
-  MapPin, 
-  User, 
-  Clock, 
-  CheckCircle2, 
+import {
+  ShoppingBag,
+  MapPin,
+  User,
+  Clock,
+  CheckCircle2,
   Loader2,
   ChevronRight,
   Utensils,
@@ -88,7 +88,7 @@ export default function ProviderOrdersPage() {
           </p>
         </div>
         <div className="bg-slate-900 text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-xl shadow-slate-200">
-           {orders.length} TOTAL ORDERS
+          {orders.length} TOTAL ORDERS
         </div>
       </header>
 

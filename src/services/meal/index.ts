@@ -4,27 +4,6 @@ import { cookies } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-// export const createMeal = async (formData: FormData) => {
-//   const cookieStore = await cookies();
-//   const token = cookieStore.get("token")?.value;
-
-//   try {
-//     const res = await fetch(`${API_URL}/provider/meals`, {
-//       method: "POST",
-//       credentials: "include",  // sends cookies automatically
-//       headers: {
-//         Authorization: `Bearer ${token}`,  // ✅ only Authorization header
-//       },
-//       body: formData,  // FormData with text URL
-//     });
-//     if (!res.ok) throw new Error("Failed to create meal");
-//     return await res.json();
-//   } catch (error) {
-//     console.error("Create meal error:", error);
-//     return null;
-//   }
-// };
-
 export const createMeal = async (meal: {
   title: string;
   description: string;
