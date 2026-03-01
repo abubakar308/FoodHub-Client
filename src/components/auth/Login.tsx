@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -17,85 +17,106 @@ export default function LoginForm({ className }: { className?: string }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-  // Track specific field errors
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        router.push("/");
+      }
+    };
+    fetchUser();
+  }, [router]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setErrors({}); // Reset errors on new attempt
+    setErrors({});
 
     try {
       const payload = { email, password };
       const data = await loginUser(payload);
 
       if (data.success) {
-        toast.success("Login successful! Redirecting...");
+        toast.success("Welcome back to FoodHub!");
         router.push("/");
         router.refresh();
       } else {
-        // If API returns specific field errors, map them here
-        // Otherwise, set a general error or check logic
         setErrors({
-          email: data.message?.includes("email") ? data.message : undefined,
-          password: data.message?.includes("password") ? data.message : "Invalid credentials",
+          email: data.message?.toLowerCase().includes("email") ? data.message : undefined,
+          password: !data.message?.toLowerCase().includes("email") ? data.message : undefined,
         });
-        toast.error("Login failed");
+        toast.error(data.message || "Invalid credentials");
       }
     } catch (err) {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-  const fetchUser = async () => {
-    const currentUser = await getCurrentUser()
-
-    // ✅ If user is already logged in, redirect them away from login page
-    if (currentUser) {
-      router.push("/");
-    }
-  };
-
-  fetchUser();
-}, [router]);
-
   return (
-    <section className={cn("min-h-screen flex items-center justify-center px-4", className)}>
-      <div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-xl">
-        <h1 className="mb-2 text-center text-2xl font-bold text-gray-800">
-          Welcome Back 👋
-        </h1>
-        <p className="mb-6 text-center text-sm text-gray-500">
-          Login to continue to FoodHub
-        </p>
+    <section className={cn("min-h-screen flex items-center justify-center px-4 bg-slate-50/50", className)}>
+      <div className="w-full max-w-md rounded-[32px] border border-slate-100 bg-white p-10 shadow-2xl shadow-slate-200/50">
+        
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+            Welcome Back 👋
+          </h1>
+          <p className="text-slate-500 font-medium mt-2">
+            Log in to continue your FoodHub journey
+          </p>
+        </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-6">
+          
           {/* Email Field */}
-          <div className="space-y-1">
-            <Input
-              type="email"
-              placeholder="Email"
-              className={cn("h-11", errors.email && "border-red-500 focus-visible:ring-red-500")}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+          <div className="space-y-1.5">
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3.5 text-slate-400" size={18} />
+              <Input
+                type="email"
+                placeholder="name@example.com"
+                className={cn(
+                  "h-12 pl-10 rounded-xl border-slate-100 bg-slate-50/50 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium",
+                  errors.email && "border-red-500 bg-red-50/30"
+                )}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
             {errors.email && (
-              <p className="text-xs font-medium text-red-500 ml-1">{errors.email}</p>
+              <p className="text-[11px] font-bold text-red-500 ml-1 uppercase tracking-tighter">
+                {errors.email}
+              </p>
             )}
           </div>
 
           {/* Password Field */}
-          <div className="space-y-1">
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center px-1">
+              <label className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                Password
+              </label>
+              <Link href="#" className="text-xs font-bold text-green-600 hover:text-green-700">
+                Forgot?
+              </Link>
+            </div>
             <div className="relative">
+              <Lock className="absolute left-3 top-3.5 text-slate-400" size={18} />
               <Input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className={cn("h-11 pr-10", errors.password && "border-red-500 focus-visible:ring-red-500")}
+                placeholder="••••••••"
+                className={cn(
+                  "h-12 pl-10 pr-10 rounded-xl border-slate-100 bg-slate-50/50 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium",
+                  errors.password && "border-red-500 bg-red-50/30"
+                )}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -103,29 +124,42 @@ export default function LoginForm({ className }: { className?: string }) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {errors.password && (
-              <p className="text-xs font-medium text-red-500 ml-1">{errors.password}</p>
+              <p className="text-[11px] font-bold text-red-500 ml-1 uppercase tracking-tighter">
+                {errors.password}
+              </p>
             )}
           </div>
 
           <Button
             type="submit"
-            className="w-full h-11 text-base font-medium mt-2"
+            className="w-full h-14 text-lg font-black bg-slate-900 hover:bg-green-600 text-white rounded-2xl shadow-xl shadow-slate-200 transition-all active:scale-[0.98] mt-2"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="animate-spin" size={20} />
+                <span>Authenticating...</span>
+              </div>
+            ) : (
+              "Sign In"
+            )}
           </Button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-500">
-          New here?{" "}
-          <Link href="/register" className="font-semibold text-green-600 hover:underline">
-            Create account
+        {/* Footer */}
+        <p className="mt-8 text-center text-sm font-medium text-slate-500">
+          New to FoodHub?{" "}
+          <Link 
+            href="/register" 
+            className="font-black text-green-600 hover:text-green-700 transition-colors underline-offset-4 hover:underline"
+          >
+            Create an account
           </Link>
         </p>
       </div>

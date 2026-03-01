@@ -1,169 +1,148 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation"; // Correct import for App Router
-import { Eye, EyeOff } from "lucide-react";
-import { toast } from "sonner";
-
+import { useRouter } from "next/navigation"; // Correct for App Router
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { registerUser } from "@/services/auth"; // Correct import path
 import { getCurrentUser } from "@/services/auth";
+import { UserCircle, Mail, Lock, Loader2 } from "lucide-react";
 
 type UserRole = "PROVIDER" | "CUSTOMER";
 
 const SignupPage = () => {
   const router = useRouter();
-  
-  // Form States
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("CUSTOMER");
-  
-  // UI States
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string }>({});
 
-  // Auth Guard: Redirect if already logged in
+  // চেক করা ইউজার আগে থেকে লগইন কি না
   useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const currentUser = await getCurrentUser();
-        if (currentUser) {
-          router.push("/");
-        } else {
-          setIsCheckingAuth(false);
-        }
-      } catch {
-        setIsCheckingAuth(false);
+    const fetchUser = async () => {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        router.push("/");
       }
     };
-    checkUser();
+    fetchUser();
   }, [router]);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setErrors({});
 
     try {
       const payload = { name, email, password, role };
+      
+      // সার্ভিস কল
+      const result = await registerUser(payload);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        // Set inline errors if the API returns specific field messages
-        const errMsg = data.message || "Signup failed";
-        if (errMsg.toLowerCase().includes("email")) setErrors({ email: errMsg });
-        else if (errMsg.toLowerCase().includes("name")) setErrors({ name: errMsg });
-        else if (errMsg.toLowerCase().includes("password")) setErrors({ password: errMsg });
-        
-        throw new Error(errMsg);
+      if (result.success) {
+        toast.success("Account created! Please login.");
+        router.push("/login");
+      } else {
+        toast.error(result.message || "Registration failed");
       }
-
-      toast.success("Account created successfully! Please login.");
-      router.push("/login");
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+      toast.error("An unexpected error occurred");
+      console.error("Signup error:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Prevent rendering the form while checking if user is already logged in
-  if (isCheckingAuth) return null;
-
   return (
-    <section className="min-h-screen flex items-center justify-center px-4 bg-gray-50/50">
-      <div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-xl">
-        <h1 className="mb-2 text-center text-2xl font-bold text-gray-800">
-          Create Account 🚀
-        </h1>
-        <p className="mb-6 text-center text-sm text-gray-500">
-          Join FoodHub today
-        </p>
+    <section className="min-h-screen flex items-center justify-center px-4 bg-slate-50/50">
+      <div className="w-full max-w-md rounded-[32px] border border-slate-100 bg-white p-10 shadow-2xl shadow-slate-200/50">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+            Create Account 🚀
+          </h1>
+          <p className="text-slate-500 font-medium mt-2">
+            Join FoodHub and start eating fresh
+          </p>
+        </div>
 
-        <form onSubmit={handleSignup} className="space-y-4">
-          {/* Name Field */}
+        <form onSubmit={handleSignup} className="space-y-5">
           <div className="space-y-1">
-            <Input
-              placeholder="Full name"
-              className={cn("h-11", errors.name && "border-red-500 focus-visible:ring-red-500")}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-            {errors.name && <p className="text-xs font-medium text-red-500 ml-1">{errors.name}</p>}
-          </div>
-
-          {/* Email Field */}
-          <div className="space-y-1">
-            <Input
-              type="email"
-              placeholder="Email"
-              className={cn("h-11", errors.email && "border-red-500 focus-visible:ring-red-500")}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            {errors.email && <p className="text-xs font-medium text-red-500 ml-1">{errors.email}</p>}
-          </div>
-
-          {/* Password Field */}
-          <div className="space-y-1">
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
             <div className="relative">
+              <UserCircle className="absolute left-3 top-3 text-slate-400" size={18} />
               <Input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className={cn("h-11 pr-10", errors.password && "border-red-500 focus-visible:ring-red-500")}
+                placeholder="John Doe"
+                className="h-12 pl-10 rounded-xl border-slate-100 focus:border-green-500 focus:ring-green-500/10 transition-all"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 text-slate-400" size={18} />
+              <Input
+                type="email"
+                placeholder="name@example.com"
+                className="h-12 pl-10 rounded-xl border-slate-100 focus:border-green-500 focus:ring-green-500/10 transition-all"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 text-slate-400" size={18} />
+              <Input
+                type="password"
+                placeholder="••••••••"
+                className="h-12 pl-10 rounded-xl border-slate-100 focus:border-green-500 focus:ring-green-500/10 transition-all"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
             </div>
-            {errors.password && <p className="text-xs font-medium text-red-500 ml-1">{errors.password}</p>}
           </div>
 
-          {/* Role Selection */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-600 ml-1">Register as:</label>
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">I am a...</label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
-              className="w-full h-11 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              className="w-full h-12 rounded-xl border border-slate-100 px-4 text-sm font-bold text-slate-700 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-green-500/10 transition-all appearance-none cursor-pointer"
             >
-              <option value="CUSTOMER">Customer</option>
-              <option value="PROVIDER">Provider</option>
+              <option value="CUSTOMER">🍲 Hungry Customer</option>
+              <option value="PROVIDER">👨‍🍳 Food Provider</option>
             </select>
           </div>
 
-          <Button className="w-full h-11 text-base font-medium mt-2" disabled={loading}>
-            {loading ? "Creating Account..." : "Create Account"}
+          <Button 
+            className="w-full h-14 text-lg font-black bg-green-600 hover:bg-green-700 rounded-2xl shadow-lg shadow-green-100 transition-all active:scale-[0.98]" 
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="animate-spin" size={20} /> Creating...
+              </span>
+            ) : (
+              "Get Started"
+            )}
           </Button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-500">
+        <p className="mt-8 text-center text-sm font-medium text-slate-500">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-green-600 hover:underline">
-            Login
-          </Link>
+          <a href="/login" className="font-black text-green-600 hover:text-green-700 transition-colors underline-offset-4 hover:underline">
+            Login here
+          </a>
         </p>
       </div>
     </section>
