@@ -20,7 +20,8 @@ import { Button } from "@/components/ui/button";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Manage Menu", href: "/dashboard/add-menu", icon: UtensilsCrossed },
+  { name: "Manage Menu", href: "/dashboard/manage-menu", icon: UtensilsCrossed }, 
+  { name: "Add New Meal", href: "/dashboard/add-menu", icon: PlusCircle }, 
   { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag }
 ];
 
