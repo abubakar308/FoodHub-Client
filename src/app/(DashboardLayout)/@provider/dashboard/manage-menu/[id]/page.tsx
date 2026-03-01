@@ -6,13 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getCategories } from "@/services/categories";
 import { getAllMeals, updateMeal } from "@/services/meal";
 
-type Category = {
-  id: string;
-  name: string;
-};
 
 type Meal = {
   id: string;
@@ -20,7 +15,6 @@ type Meal = {
   description: string;
   price: number;
   imageUrl: string;
-  categoryId: string;
 };
 
 export default function EditMealPage() {
@@ -29,15 +23,11 @@ export default function EditMealPage() {
   const mealId = params.id;
 
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [meal, setMeal] = useState<Meal | null>(null);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const cats = await getCategories();
-        setCategories(cats.data || []);
-
         const mealsRes = await getAllMeals();
         const currentMeal = mealsRes?.data?.data?.find((m: Meal) => m.id === mealId);
         setMeal(currentMeal || null);
@@ -62,8 +52,7 @@ export default function EditMealPage() {
         title: (formData.get("title") as string) || "",
         description: (formData.get("description") as string) || "",
         price: Number(formData.get("price")) || 0,
-        imageUrl: (formData.get("imageUrl") as string) || "",
-        categoryId: (formData.get("categoryId") as string) || "",
+        imageUrl: (formData.get("imageUrl") as string) || ""
       });
 
       toast.success("Meal updated successfully 🎉");
@@ -99,21 +88,6 @@ export default function EditMealPage() {
                 defaultValue={meal.price}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Category</label>
-              <select
-                name="categoryId"
-                defaultValue={meal.categoryId}
-                className="w-full border rounded px-3 py-2"
-              >
-                <option value="">Select category</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
 

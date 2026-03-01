@@ -38,7 +38,7 @@ export default function ManageMealsPage() {
     loadMeals();
   }, []);
 
-  // Sonner Toast দিয়ে কনফার্মেশন ও ডিলিট লজিক
+
   const handleDelete = async (id: string, title: string) => {
     toast(`Are you sure you want to delete "${title}"?`, {
       action: {
@@ -46,12 +46,17 @@ export default function ManageMealsPage() {
         onClick: async () => {
           try {
             const res = await deleteMeal(id);
-            if (res?.success) {
-              toast.success(`${title} removed successfully`);
-              setMeals((prev) => prev.filter((meal) => meal.id !== id));
-            } else {
-              toast.error(res?.message || "Deletion failed");
-            }
+           if (res?.success) {
+      toast.success(`${title} removed successfully`);
+      setMeals((prev) => prev.filter((meal) => meal.id !== id));
+    } else {
+  
+      if (res?.error?.includes("OrderItem_mealId_fkey")) {
+        toast.error(`Cannot delete "${title}" because it is part of an active order history. Try hiding it instead.`);
+      } else {
+        toast.error(res?.message || "Deletion failed");
+      }
+    }
           } catch (error) {
             toast.error("An unexpected error occurred");
           }

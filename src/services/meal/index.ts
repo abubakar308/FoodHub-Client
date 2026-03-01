@@ -40,7 +40,6 @@ export const updateMeal = async (mealId: string, meal: {
   description: string;
   price: number;
   imageUrl: string;
-  categoryId: string;
 }) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
@@ -56,7 +55,7 @@ export const updateMeal = async (mealId: string, meal: {
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
+    const errorText = await res.json();
     console.error("Update meal backend response:", errorText);
     throw new Error("Failed to update meal");
   }
@@ -74,7 +73,6 @@ export const updateMeal = async (mealId: string, meal: {
     const res = await fetch(`${API_URL}/provider/meals/${id}`, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
