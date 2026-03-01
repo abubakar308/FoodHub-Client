@@ -91,12 +91,13 @@ export const loginUser = async (
 };
 
 export const getCurrentUser = async () => {
-  const storeCookie = await cookies();
-  const token = storeCookie.get("token")?.value;
+const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
   let decodedData = null;
   if (token) {
     decodedData = await jwtDecode(token);
+    
     return decodedData;
   } else {
     return null;

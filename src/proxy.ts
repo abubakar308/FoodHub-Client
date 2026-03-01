@@ -9,6 +9,7 @@ const PUBLIC_ROUTE = ["/login", "/register"];
 // This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
   const { pathname, origin } = request.nextUrl;
+
   const user = await getCurrentUser();
 
   if (PUBLIC_ROUTE.includes(pathname)) {
