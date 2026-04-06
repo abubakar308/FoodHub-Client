@@ -8,6 +8,9 @@ import { toast } from "sonner";
 import { Loader2, ShoppingCart, UtensilsCrossed, ArrowLeft, Star, User } from "lucide-react";
 import Link from "next/link";
 import { getMealById } from "@/services/meal";
+import { useCart } from "@/context/CartContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axiosInstance from "@/lib/axiosInstance";
 
 // --- Types Updated ---
 type Review = {
@@ -35,7 +38,25 @@ export default function MealDetailsPage({ params }: { params: Promise<{ id: stri
 
   const [meal, setMeal] = useState<Meal | null>(null);
   const [loading, setLoading] = useState(true);
-  const [adding, setAdding] = useState(false);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (mealId: string) => {
+      const { data } = await axiosInstance.post("/api/cart", { mealId });
+      return data;
+    },
+    onSuccess: (res) => {
+      if (res?.success) {
+        toast.success(`${meal?.title} added to cart!`);
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+      } else {
+        toast.error(res?.message || "Failed to add to cart");
+      }
+    },
+    onError: () => {
+      toast.error("Failed to add to cart");
+    },
+  });
 
   useEffect(() => {
     const fetchMeal = async () => {
@@ -58,18 +79,9 @@ export default function MealDetailsPage({ params }: { params: Promise<{ id: stri
     ? (meal.reviews.reduce((acc, rev) => acc + rev.rating, 0) / meal.reviews.length).toFixed(1)
     : null;
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!meal) return;
-    try {
-      setAdding(true);
-      const res = await addToCart(meal.id);
-      if (res?.success) toast.success(`${meal.title} added to cart!`);
-      else toast.error(res?.message || "Failed to add to cart");
-    } catch (err) {
-      toast.error("Failed to add to cart");
-    } finally {
-      setAdding(false);
-    }
+    mutation.mutate(meal.id);
   };
 
   if (loading) return (
@@ -137,9 +149,9 @@ export default function MealDetailsPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div className="mt-12">
-            <Button onClick={handleAddToCart} disabled={adding} className="w-full h-18 rounded-[24px] bg-slate-900 hover:bg-green-600 text-white text-xl font-black py-8 shadow-2xl transition-all active:scale-95">
-              {adding ? <Loader2 className="animate-spin mr-2" /> : <ShoppingCart className="mr-3" size={24} />}
-              {adding ? "Adding..." : `Add to Cart`}
+            <Button onClick={handleAddToCart} disabled={mutation.isPending} className="w-full h-18 rounded-[24px] bg-slate-900 hover:bg-green-600 text-white text-xl font-black py-8 shadow-2xl transition-all active:scale-95">
+              {mutation.isPending ? <Loader2 className="animate-spin mr-2" /> : <ShoppingCart className="mr-3" size={24} />}
+              {mutation.isPending ? "Adding..." : `Add to Cart`}
             </Button>
           </div>
         </div>

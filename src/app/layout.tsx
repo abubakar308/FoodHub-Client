@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "food ordering app",
 };
 
+import QueryProvider from "@/providers/QueryProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <QueryProvider>
+          {children}
+        </QueryProvider>
          <Toaster richColors/>
       </body>
     </html>

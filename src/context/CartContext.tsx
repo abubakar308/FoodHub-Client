@@ -1,7 +1,8 @@
 "use client";
 
-import { getCart } from "@/services/order";
-import { createContext, useContext, useEffect, useState } from "react";
+import axiosInstance from "@/lib/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
+import { createContext, useContext, useMemo } from "react";
 
 type CartItem = {
   quantity: number;
@@ -15,33 +16,36 @@ type Cart = {
 type CartContextType = {
   cart: Cart;
   count: number;
-  refreshCart: () => Promise<void>;
+  isLoading: boolean;
+  refreshCart: () => void;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [cart, setCart] = useState<Cart>({ items: [], totalPrice: 0 });
-  const [count, setCount] = useState(0);
+  const { 
+    data: cartData, 
+    isLoading, 
+    refetch 
+  } = useQuery({
+    queryKey: ["cart"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get("/api/cart");
+      return data || { items: [], totalPrice: 0 };
+    },
+  });
 
-  const loadCart = async () => {
-    const data = await getCart();
-    setCart(data);
+  const cart = useMemo(() => cartData || { items: [], totalPrice: 0 }, [cartData]);
 
-    const totalCount = data.items.reduce(
-      (sum: number, item: CartItem) => sum + (item.quantity || 1),
+  const count = useMemo(() => {
+    return cart.items.reduce(
+      (sum: number, item: CartItem) => sum + (item.quantity || 0),
       0
     );
-
-    setCount(totalCount);
-  };
-
-  useEffect(() => {
-     loadCart();
-  }, []);
+  }, [cart.items]);
 
   return (
-    <CartContext.Provider value={{ cart, count, refreshCart: loadCart }}>
+    <CartContext.Provider value={{ cart, count, isLoading, refreshCart: refetch }}>
       {children}
     </CartContext.Provider>
   );

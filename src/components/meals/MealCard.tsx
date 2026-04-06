@@ -4,8 +4,10 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { addToCart } from "@/services/order";
-import { ShoppingCart, Utensils, Store, ArrowUpRight } from "lucide-react";
+import { ShoppingCart, Utensils, Store, ArrowUpRight, Loader2 } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axiosInstance from "@/lib/axiosInstance";
 
 type Meal = {
   id: string;
@@ -18,20 +20,30 @@ type Meal = {
 };
 
 export default function MealCard({ meal }: { meal: Meal }) {
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const queryClient = useQueryClient();
 
-    try {
-      const res = await addToCart(meal.id);
+  const mutation = useMutation({
+    mutationFn: async (mealId: string) => {
+      const { data } = await axiosInstance.post("/api/cart", { mealId });
+      return data;
+    },
+    onSuccess: (res) => {
       if (res?.success) {
         toast.success(`${meal.title} added to cart! 😋`);
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
       } else {
         toast.error(res?.message || "Failed to add to cart");
       }
-    } catch (error) {
+    },
+    onError: () => {
       toast.error("Something went wrong");
-    }
+    },
+  });
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    mutation.mutate(meal.id);
   };
 
   return (
@@ -95,10 +107,11 @@ export default function MealCard({ meal }: { meal: Meal }) {
           <div className="mt-5">
             <Button 
               onClick={handleAddToCart} 
+              disabled={mutation.isPending}
               className="w-full h-12 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold gap-2 shadow-lg shadow-green-100 transition-all active:scale-95"
             >
-              <ShoppingCart size={18} />
-              Add to Cart
+              {mutation.isPending ? <Loader2 className="animate-spin" size={18} /> : <ShoppingCart size={18} />}
+              {mutation.isPending ? "Adding..." : "Add to Cart"}
             </Button>
           </div>
         </div>

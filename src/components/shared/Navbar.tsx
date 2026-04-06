@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getCurrentUser, logOut } from "@/services/auth";
-import { getCart } from "@/services/order";
+import { useCart } from "@/context/CartContext";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -31,23 +31,13 @@ const navItems = [
 
 export default function Navbar() {
   const [user, setUser] = useState<any | null>(null);
-  const [cartCount, setCartCount] = useState(0);
+  const { count } = useCart();
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       const currentUser = await getCurrentUser();
       setUser(currentUser);
-
-      const response = await getCart();
-      if (response.items) {
-        // Calculate sum of all quantities
-        const total = response.items.reduce(
-          (acc: number, item: any) => acc + item.quantity,
-          0
-        );
-        setCartCount(total);
-      }
     };
 
     fetchData();
@@ -93,16 +83,15 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
    
           {
-            user && (
+            user && user.role?.toUpperCase() === 'CUSTOMER' && (
           <Link href="/dashboard/cart" className="relative p-2 hover:bg-accent rounded-full transition-colors">
             <ShoppingCart className="h-5 w-5 text-foreground" />
-            {cartCount > 0 && (
+            {count > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {cartCount}
+                {count}
               </span>
             )}
           </Link>
-
             )
           }
           {!user ? (
@@ -176,16 +165,18 @@ export default function Navbar() {
                   <>
 
                    {/* Mobile Cart */}
-                <Link href="/dashboard/cart" className="flex items-center justify-between text-lg font-medium">
-                  <div className="flex items-center gap-2">
-                    <ShoppingCart className="h-5 w-5" /> Cart
-                  </div>
-                  {cartCount > 0 && (
-                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      {cartCount} items
-                    </span>
-                  )}
-                </Link>
+                {user.role?.toUpperCase() === 'CUSTOMER' && (
+                  <Link href="/dashboard/cart" className="flex items-center justify-between text-lg font-medium">
+                    <div className="flex items-center gap-2">
+                      <ShoppingCart className="h-5 w-5" /> Cart
+                    </div>
+                    {count > 0 && (
+                      <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                        {count} items
+                      </span>
+                    )}
+                  </Link>
+                )}
                     <Link href="/profile" className="flex items-center gap-2 text-lg font-medium">
                       <User className="h-5 w-5" /> Profile
                     </Link>
