@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 import QueryProvider from "@/providers/QueryProvider";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export default function RootLayout({
   children,
@@ -31,9 +32,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          {children}
+          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+            {children}
+          </GoogleOAuthProvider>
         </QueryProvider>
-         <Toaster richColors/>
+        <Toaster richColors />
       </body>
     </html>
   );

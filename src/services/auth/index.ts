@@ -16,7 +16,9 @@ interface LoginPayload {
   password: string;
 }
 
-
+interface GoogleLoginPayload {
+  token: string;
+}
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -40,7 +42,6 @@ export const registerUser = async (
     const result: ApiResponse = await res.json();
 
     if (result.success) {
-      // only revalidate public pages
       revalidatePath("/login");
     }
 
@@ -52,7 +53,6 @@ export const registerUser = async (
     };
   }
 };
-
 
 export const loginUser = async (
   userData: LoginPayload
@@ -76,6 +76,7 @@ export const loginUser = async (
         httpOnly: true,
         secure: false,
         sameSite: "lax",
+        path: "/",
       });
 
       revalidatePath("/");
@@ -90,16 +91,52 @@ export const loginUser = async (
   }
 };
 
+export const googleLoginUser = async (
+  payload: GoogleLoginPayload
+): Promise<ApiResponse> => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/google-login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result: ApiResponse<{ token: string }> = await res.json();
+
+    if (result.success && result.data?.token) {
+      const cookieStore = await cookies();
+
+      cookieStore.set("token", result.data.token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+      });
+
+      revalidatePath("/");
+    }
+
+    return result;
+  } catch {
+    return {
+      success: false,
+      message: "Google login failed",
+    };
+  }
+};
+
 export const getCurrentUser = async () => {
-const cookieStore = await cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
-  let decodedData = null;
-  if (token) {
-    decodedData = await jwtDecode(token);
-    
-    return decodedData;
-  } else {
+  if (!token) return null;
+
+  try {
+    return jwtDecode(token);
+  } catch {
     return null;
   }
 };

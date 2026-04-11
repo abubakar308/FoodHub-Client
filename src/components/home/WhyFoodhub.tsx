@@ -1,91 +1,115 @@
 "use client";
 
-import { FaTruck, FaLeaf, FaStar } from "react-icons/fa";
+import {
+  FaTruck,
+  FaLeaf,
+  FaStar,
+  FaShieldAlt,
+} from "react-icons/fa";
 import { cn } from "@/lib/utils";
 
-const WhyFoodhub = () => {
+const WhyChooseUs = () => {
   const features = [
     {
-      icon: <FaTruck size={28} />,
+      icon: <FaTruck size={26} />,
       title: "Fast Delivery",
       description:
         "Get your meals delivered hot and fresh in record time, right to your doorstep.",
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      borderColor: "group-hover:border-green-200",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      borderColor: "group-hover:border-primary/30",
     },
     {
-      icon: <FaLeaf size={28} />,
+      icon: <FaLeaf size={26} />,
       title: "Fresh Ingredients",
       description:
-        "All meals are made from high-quality, fresh ingredients for the perfect taste.",
-      color: "text-amber-600",
-      bgColor: "bg-amber-50",
-      borderColor: "group-hover:border-amber-200",
+        "All meals are prepared using high-quality, fresh ingredients for the best taste.",
+      color: "text-emerald-500",
+      bgColor: "bg-emerald-500/10",
+      borderColor: "group-hover:border-emerald-500/30",
     },
     {
-      icon: <FaStar size={28} />,
+      icon: <FaStar size={26} />,
+      title: "Top Rated Meals",
+      description:
+        "Highly rated dishes from customers who love our quality and consistency.",
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500/10",
+      borderColor: "group-hover:border-yellow-500/30",
+    },
+    {
+      icon: <FaShieldAlt size={26} />,
       title: "Trusted Providers",
       description:
-        "We partner with verified restaurants and chefs to ensure top-notch quality.",
-      color: "text-rose-600",
-      bgColor: "bg-rose-50",
-      borderColor: "group-hover:border-rose-200",
+        "We work with verified restaurants and chefs to ensure quality and safety.",
+      color: "text-rose-500",
+      bgColor: "bg-rose-500/10",
+      borderColor: "group-hover:border-rose-500/30",
     },
   ];
 
   return (
-    <section className="container mx-auto px-6">
-      {/* Section Header */}
-      <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-        <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-          Why Choose <span className="text-green-600">FoodHub?</span>
-        </h2>
-        <p className="text-slate-500 text-lg">
-          We combine technology with taste to bring you the best dining experience at home.
-        </p>
-      </div>
+    <section className="bg-background py-16 lg:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-      {/* Features Grid */}
-      <div className="grid gap-8 md:grid-cols-3">
-        {features.map((feature, index) => (
-          <div
-            key={index}
-            className={cn(
-              "group relative flex flex-col items-center text-center p-10 bg-white rounded-[32px] border border-slate-100 transition-all duration-500",
-              "hover:shadow-2xl hover:shadow-slate-200/50 hover:-translate-y-2",
-              feature.borderColor
-            )}
-          >
-            {/* Icon Box */}
+        {/* Header */}
+        <div className="mx-auto mb-14 max-w-2xl text-center space-y-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground">
+            Why Choose <span className="text-primary">Us?</span>
+          </h2>
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+            We combine technology with taste to deliver a seamless and delightful
+            food experience from kitchen to doorstep.
+          </p>
+        </div>
+
+        {/* Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature, index) => (
             <div
+              key={index}
               className={cn(
-                "w-20 h-20 flex items-center justify-center rounded-2xl mb-8 transition-transform duration-500 group-hover:rotate-[10deg] group-hover:scale-110",
-                feature.bgColor,
-                feature.color
+                "group relative flex flex-col items-center text-center p-8 rounded-3xl border transition-all duration-300",
+                "bg-card border-border hover:-translate-y-2 hover:shadow-xl",
+                feature.borderColor
               )}
             >
-              {feature.icon}
+              {/* Icon */}
+              <div
+                className={cn(
+                  "flex h-16 w-16 items-center justify-center rounded-2xl mb-6 transition-all duration-300",
+                  feature.bgColor,
+                  feature.color,
+                  "group-hover:scale-110 group-hover:rotate-6"
+                )}
+              >
+                {feature.icon}
+              </div>
+
+              {/* Title */}
+              <h3 className="text-lg font-bold text-card-foreground mb-3 tracking-tight">
+                {feature.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-sm leading-6 text-muted-foreground">
+                {feature.description}
+              </p>
+
+              {/* Bottom Accent */}
+              <div
+                className={cn(
+                  "absolute bottom-0 h-1 w-0 rounded-full transition-all duration-300",
+                  feature.color.replace("text", "bg"),
+                  "group-hover:w-16"
+                )}
+              />
             </div>
-
-            {/* Content */}
-            <h3 className="text-2xl font-extrabold text-slate-800 mb-4 tracking-tight">
-              {feature.title}
-            </h3>
-            <p className="text-slate-500 leading-relaxed font-medium">
-              {feature.description}
-            </p>
-
-            {/* Bottom Accent Line */}
-            <div className={cn(
-              "absolute bottom-0 h-1.5 w-0 group-hover:w-24 transition-all duration-500 rounded-t-full",
-              feature.color.replace("text", "bg")
-            )} />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
 };
 
-export default WhyFoodhub;
+export default WhyChooseUs;

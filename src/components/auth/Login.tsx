@@ -5,11 +5,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { GoogleLogin } from "@react-oauth/google";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { getCurrentUser, loginUser } from "@/services/auth";
+import {
+  getCurrentUser,
+  loginUser,
+  googleLoginUser,
+} from "@/services/auth";
 
 export default function LoginForm({ className }: { className?: string }) {
   const router = useRouter();
@@ -17,7 +22,10 @@ export default function LoginForm({ className }: { className?: string }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -44,23 +52,59 @@ export default function LoginForm({ className }: { className?: string }) {
         router.refresh();
       } else {
         setErrors({
-          email: data.message?.toLowerCase().includes("email") ? data.message : undefined,
-          password: !data.message?.toLowerCase().includes("email") ? data.message : undefined,
+          email: data.message?.toLowerCase().includes("email")
+            ? data.message
+            : undefined,
+          password: !data.message?.toLowerCase().includes("email")
+            ? data.message
+            : undefined,
         });
         toast.error(data.message || "Invalid credentials");
       }
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: {
+    credential?: string;
+  }) => {
+    if (!credentialResponse.credential) {
+      toast.error("Google token not found");
+      return;
+    }
+
+    try {
+      setGoogleLoading(true);
+
+      const data = await googleLoginUser({
+        token: credentialResponse.credential,
+      });
+
+      if (data.success) {
+        toast.success("Google login successful!");
+        router.push("/");
+        router.refresh();
+      } else {
+        toast.error(data.message || "Google login failed");
+      }
+    } catch {
+      toast.error("Google login failed");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
-    <section className={cn("min-h-screen flex items-center justify-center px-4 bg-slate-50/50", className)}>
+    <section
+      className={cn(
+        "min-h-screen flex items-center justify-center px-4 bg-slate-50/50",
+        className
+      )}
+    >
       <div className="w-full max-w-md rounded-[32px] border border-slate-100 bg-white p-10 shadow-2xl shadow-slate-200/50">
-        
-        {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">
             Welcome Back 👋
@@ -71,8 +115,6 @@ export default function LoginForm({ className }: { className?: string }) {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
-          
-          {/* Email Field */}
           <div className="space-y-1.5">
             <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
               Email Address
@@ -98,13 +140,15 @@ export default function LoginForm({ className }: { className?: string }) {
             )}
           </div>
 
-          {/* Password Field */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center px-1">
               <label className="text-xs font-black text-slate-400 uppercase tracking-widest">
                 Password
               </label>
-              <Link href="#" className="text-xs font-bold text-green-600 hover:text-green-700">
+              <Link
+                href="#"
+                className="text-xs font-bold text-green-600 hover:text-green-700"
+              >
                 Forgot?
               </Link>
             </div>
@@ -139,7 +183,7 @@ export default function LoginForm({ className }: { className?: string }) {
           <Button
             type="submit"
             className="w-full h-14 text-lg font-black bg-slate-900 hover:bg-green-600 text-white rounded-2xl shadow-xl shadow-slate-200 transition-all active:scale-[0.98] mt-2"
-            disabled={loading}
+            disabled={loading || googleLoading}
           >
             {loading ? (
               <div className="flex items-center gap-2">
@@ -152,11 +196,33 @@ export default function LoginForm({ className }: { className?: string }) {
           </Button>
         </form>
 
-        {/* Footer */}
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Or continue with
+          </span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        <div className="flex justify-center">
+          {googleLoading ? (
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+              <Loader2 className="animate-spin" size={18} />
+              Processing Google login...
+            </div>
+          ) : (
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error("Google login failed")}
+              useOneTap={false}
+            />
+          )}
+        </div>
+
         <p className="mt-8 text-center text-sm font-medium text-slate-500">
           New to FoodHub?{" "}
-          <Link 
-            href="/register" 
+          <Link
+            href="/register"
             className="font-black text-green-600 hover:text-green-700 transition-colors underline-offset-4 hover:underline"
           >
             Create an account

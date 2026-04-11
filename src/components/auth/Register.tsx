@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Correct for App Router
-import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { registerUser } from "@/services/auth"; // Correct import path
-import { getCurrentUser } from "@/services/auth";
+import { getCurrentUser, googleLoginUser, registerUser } from "@/services/auth";
 import { UserCircle, Mail, Lock, Loader2 } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
 
 type UserRole = "PROVIDER" | "CUSTOMER";
 
@@ -19,8 +18,8 @@ const SignupPage = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("CUSTOMER");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  // চেক করা ইউজার আগে থেকে লগইন কি না
   useEffect(() => {
     const fetchUser = async () => {
       const currentUser = await getCurrentUser();
@@ -37,8 +36,6 @@ const SignupPage = () => {
 
     try {
       const payload = { name, email, password, role };
-      
-      // সার্ভিস কল
       const result = await registerUser(payload);
 
       if (result.success) {
@@ -47,11 +44,39 @@ const SignupPage = () => {
       } else {
         toast.error(result.message || "Registration failed");
       }
-    } catch (error: any) {
+    } catch {
       toast.error("An unexpected error occurred");
-      console.error("Signup error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: {
+    credential?: string;
+  }) => {
+    if (!credentialResponse.credential) {
+      toast.error("Google token not found");
+      return;
+    }
+
+    try {
+      setGoogleLoading(true);
+
+      const result = await googleLoginUser({
+        token: credentialResponse.credential,
+      });
+
+      if (result.success) {
+        toast.success("Google signup/login successful!");
+        router.push("/");
+        router.refresh();
+      } else {
+        toast.error(result.message || "Google signup failed");
+      }
+    } catch {
+      toast.error("Google signup failed");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -69,7 +94,9 @@ const SignupPage = () => {
 
         <form onSubmit={handleSignup} className="space-y-5">
           <div className="space-y-1">
-            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+              Full Name
+            </label>
             <div className="relative">
               <UserCircle className="absolute left-3 top-3 text-slate-400" size={18} />
               <Input
@@ -83,7 +110,9 @@ const SignupPage = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+              Email Address
+            </label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 text-slate-400" size={18} />
               <Input
@@ -98,7 +127,9 @@ const SignupPage = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+              Password
+            </label>
             <div className="relative">
               <Lock className="absolute left-3 top-3 text-slate-400" size={18} />
               <Input
@@ -113,7 +144,9 @@ const SignupPage = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">I am a...</label>
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+              I am a...
+            </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
@@ -124,9 +157,9 @@ const SignupPage = () => {
             </select>
           </div>
 
-          <Button 
-            className="w-full h-14 text-lg font-black bg-green-600 hover:bg-green-700 rounded-2xl shadow-lg shadow-green-100 transition-all active:scale-[0.98]" 
-            disabled={loading}
+          <Button
+            className="w-full h-14 text-lg font-black bg-green-600 hover:bg-green-700 rounded-2xl shadow-lg shadow-green-100 transition-all active:scale-[0.98]"
+            disabled={loading || googleLoading}
           >
             {loading ? (
               <span className="flex items-center gap-2">
@@ -138,9 +171,35 @@ const SignupPage = () => {
           </Button>
         </form>
 
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Or continue with
+          </span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        <div className="flex justify-center">
+          {googleLoading ? (
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+              <Loader2 className="animate-spin" size={18} />
+              Processing Google auth...
+            </div>
+          ) : (
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error("Google auth failed")}
+              useOneTap={false}
+            />
+          )}
+        </div>
+
         <p className="mt-8 text-center text-sm font-medium text-slate-500">
           Already have an account?{" "}
-          <a href="/login" className="font-black text-green-600 hover:text-green-700 transition-colors underline-offset-4 hover:underline">
+          <a
+            href="/login"
+            className="font-black text-green-600 hover:text-green-700 transition-colors underline-offset-4 hover:underline"
+          >
             Login here
           </a>
         </p>

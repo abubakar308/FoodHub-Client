@@ -1,11 +1,19 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin} from "lucide-react";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
+import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 
 const footerLinks = {
   platform: [
     { name: "Browse Meals", href: "/meals" },
-    { name: "Top Restaurants", href: "/providers" },
+    { name: "Top Providers", href: "/providers" },
+    { name: "Special Offers", href: "/offers" },
+    { name: "Categories", href: "/categories" },
+  ],
+  company: [
+    { name: "About Us", href: "/about" },
+    { name: "Become a Provider", href: "/register" },
+    { name: "Contact", href: "/contact" },
+    { name: "FAQ", href: "/faq" },
   ],
   legal: [
     { name: "Privacy Policy", href: "/privacy" },
@@ -14,62 +22,133 @@ const footerLinks = {
   ],
 };
 
+const socialLinks = [
+  {
+    name: "Facebook",
+    href: "https://facebook.com",
+    icon: <FaFacebookF size={16} />,
+  },
+  {
+    name: "Instagram",
+    href: "https://instagram.com",
+    icon: <FaInstagram size={16} />,
+  },
+  {
+    name: "Twitter",
+    href: "https://twitter.com",
+    icon: <FaTwitter size={16} />,
+  },
+];
+
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:py-24">
-        
-        <div className="grid gap-12 lg:grid-cols-5 md:grid-cols-2">
-
-          {/* 1. Brand & Description */}
-          <div className="lg:col-span-2 space-y-6">
-            <Link href="/" className="text-3xl font-black text-white tracking-tighter flex items-center gap-2">
-              Food<span className="text-green-500">Hub</span> 🍔
+    <footer className="border-t border-border bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
+          {/* Brand */}
+          <div className="space-y-6 lg:col-span-2">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-lg shadow-sm ring-1 ring-primary/10">
+                🍽️
+              </span>
+              <span>
+                Quick<span className="text-primary">Platter</span>
+              </span>
             </Link>
-            <p className="text-base text-slate-400 max-w-sm leading-relaxed">
-              Bringing the finest local flavors straight to your doorstep. 
-              We bridge the gap between talented chefs and hungry foodies.
+
+            <p className="max-w-md text-sm leading-7 text-muted-foreground sm:text-base">
+              Bringing trusted local flavors straight to your doorstep. We
+              connect talented providers with hungry customers through a
+              seamless, fast, and delightful ordering experience.
             </p>
-            <div className="flex gap-4">
-              <SocialIcon icon={<FaFacebook size={18} />} />
-              <SocialIcon icon={<FaInstagram size={18} />} />
-              <SocialIcon icon={<FaTwitter size={18} />} />
+
+            <div className="flex flex-wrap items-center gap-3">
+              {socialLinks.map((item) => (
+                <SocialIcon
+                  key={item.name}
+                  href={item.href}
+                  label={item.name}
+                  icon={item.icon}
+                />
+              ))}
             </div>
           </div>
 
-          {/* 2. Quick Links */}
+          {/* Platform */}
           <FooterColumn title="Platform" links={footerLinks.platform} />
 
-          {/* 3. Support & Contact */}
+          {/* Company */}
+          <FooterColumn title="Company" links={footerLinks.company} />
+
+          {/* Contact */}
           <div className="space-y-6">
-            <h4 className="text-sm font-black uppercase tracking-[2px] text-white">Contact Us</h4>
-            <ul className="space-y-4">
-              <li className="flex items-center gap-3 text-sm hover:text-green-500 transition-colors cursor-pointer">
-                <Phone size={16} className="text-green-500" /> +880 1234 567 890
+            <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-foreground">
+              Contact
+            </h4>
+
+            <ul className="space-y-4 text-sm text-muted-foreground">
+              <li>
+                <a
+                  href="tel:+8801234567890"
+                  className="group flex items-center gap-3 transition-colors hover:text-primary"
+                >
+                  <Phone className="h-4 w-4 text-primary" />
+                  <span>+880 1234 567 890</span>
+                </a>
               </li>
-              <li className="flex items-center gap-3 text-sm hover:text-green-500 transition-colors cursor-pointer">
-                <Mail size={16} className="text-green-500" /> support@foodhub.com
+
+              <li>
+                <a
+                  href="mailto:support@quickplatter.com"
+                  className="group flex items-center gap-3 transition-colors hover:text-primary"
+                >
+                  <Mail className="h-4 w-4 text-primary" />
+                  <span>support@quickplatter.com</span>
+                </a>
               </li>
-              <li className="flex items-start gap-3 text-sm hover:text-green-500 transition-colors cursor-pointer">
-                <MapPin size={16} className="text-green-500 shrink-0" /> Dhaka, Bangladesh
+
+              <li className="flex items-start gap-3">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <span>Dhaka, Bangladesh</span>
               </li>
             </ul>
-          </div>
 
+            <div className="rounded-2xl border border-border bg-card p-4">
+              <p className="text-sm font-semibold text-card-foreground">
+                Need help with an order?
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Our support team is here to assist you with tracking, refunds,
+                and provider-related issues.
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* 4. Bottom Section */}
-        <div className="mt-16 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm text-slate-500 font-medium">
-            © {new Date().getFullYear()} <span className="text-slate-300">FoodHub Inc.</span> All rights reserved.
+        {/* Bottom */}
+        <div className="mt-14 flex flex-col gap-6 border-t border-border pt-8 md:flex-row md:items-center md:justify-between">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()}{" "}
+            <span className="font-medium text-foreground">QuickPlatter</span>.
+            All rights reserved.
           </p>
-          
-          {/* Payment Badges (Mock) */}
-          <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all">
-             <span className="text-[10px] font-bold uppercase tracking-widest">Secure Payments</span>
-             <div className="h-6 w-10 bg-slate-700 rounded" />
-             <div className="h-6 w-10 bg-slate-700 rounded" />
-             <div className="h-6 w-10 bg-slate-700 rounded" />
+
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Secure Payments
+            </span>
+            <div className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-card-foreground">
+              Visa
+            </div>
+            <div className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-card-foreground">
+              MasterCard
+            </div>
+            <div className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-card-foreground">
+              bKash
+            </div>
           </div>
         </div>
       </div>
@@ -77,18 +156,28 @@ export default function Footer() {
   );
 }
 
-function FooterColumn({ title, links }: { title: string; links: { name: string; href: string }[] }) {
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: { name: string; href: string }[];
+}) {
   return (
     <div className="space-y-6">
-      <h4 className="text-sm font-black uppercase tracking-[2px] text-white">{title}</h4>
+      <h4 className="text-sm font-bold uppercase tracking-[0.18em] text-foreground">
+        {title}
+      </h4>
+
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.name}>
             <Link
               href={link.href}
-              className="text-sm text-slate-400 hover:text-green-500 hover:translate-x-1 inline-block transition-all duration-300"
+              className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-all duration-200 hover:text-primary"
             >
-              {link.name}
+              <span>{link.name}</span>
+              <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" />
             </Link>
           </li>
         ))}
@@ -97,10 +186,24 @@ function FooterColumn({ title, links }: { title: string; links: { name: string; 
   );
 }
 
-function SocialIcon({ icon }: { icon: React.ReactNode }) {
+function SocialIcon({
+  icon,
+  href,
+  label,
+}: {
+  icon: React.ReactNode;
+  href: string;
+  label: string;
+}) {
   return (
-    <div className="h-10 w-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-green-600 hover:text-white transition-all duration-300 cursor-pointer shadow-lg">
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary hover:text-primary-foreground"
+    >
       {icon}
-    </div>
+    </a>
   );
 }

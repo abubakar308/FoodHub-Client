@@ -1,7 +1,11 @@
 import Categories from "@/components/home/Categories";
+import FAQSection from "@/components/home/FAQSection";
 import Featured from "@/components/home/Featured";
 import Hero from "@/components/home/Hero";
-import WhyFoodhub from "@/components/home/WhyFoodhub";
+import HowItWorks from "@/components/home/HowItWorks";
+import OffersSection from "@/components/home/OfferSection";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
+import WhyChooseUs from "@/components/home/WhyFoodhub";
 
 export default function Home() {
   return (
@@ -13,19 +17,13 @@ export default function Home() {
       {/* Page container */}
       <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        {/* spacing between sections */}
-        <section className="py-12 sm:py-16">
-          <Categories />
-        </section>
-
-        <section className="py-12 sm:py-16 border-t">
-          <Featured />
-        </section>
-
-        <section className="py-12 sm:py-16 border-t">
-          <WhyFoodhub />
-        </section>
-
+        <Categories />
+        <Featured />
+        <WhyChooseUs />
+        <OffersSection />
+        <HowItWorks />
+        <FAQSection />
+        <TestimonialsSection />
       </main>
     </div>
   );
