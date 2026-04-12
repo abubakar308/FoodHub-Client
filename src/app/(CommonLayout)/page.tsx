@@ -1,4 +1,6 @@
+import BlogSection from "@/components/home/BlogSection";
 import Categories from "@/components/home/Categories";
+import ContactCTA from "@/components/home/ContactCTA";
 import FAQSection from "@/components/home/FAQSection";
 import Featured from "@/components/home/Featured";
 import Hero from "@/components/home/Hero";
@@ -14,16 +16,21 @@ export default function Home() {
       {/* Hero should be full width */}
       <Hero />
 
+
+
+
+
       {/* Page container */}
       <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-
         <Categories />
         <Featured />
-        <WhyChooseUs />
         <OffersSection />
+        <WhyChooseUs />
         <HowItWorks />
-        <FAQSection />
         <TestimonialsSection />
+        <BlogSection />
+        <FAQSection />
+        <ContactCTA />
       </main>
     </div>
   );

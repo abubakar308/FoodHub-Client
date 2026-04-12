@@ -4,22 +4,23 @@ import { cookies } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-export const createProvider = async (formData: Record<string, unknown>) => {
+export const createProvider = async (formData: FormData) => {
 
-   const cookieStore = await cookies();   
-    const token = cookieStore.get("token")?.value;
-    if (!token) return null;
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return null;
 
   try {
     const res = await fetch(`${API_URL}/provider/profile`, {
       method: "POST",
       credentials: "include",   // 🔥 THIS sends cookies automatically
       headers: {
-        "Content-Type": "application/json",
-       Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify(formData),
+      body: formData,
     });
+
+    console.log(await res.json());
 
 
     if (!res.ok) return null;
@@ -29,6 +30,52 @@ export const createProvider = async (formData: Record<string, unknown>) => {
     return null;
   }
 };
+
+export const updateProvider = async (formData: FormData) => {
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return null;
+
+  try {
+    const res = await fetch(`${API_URL}/provider/profile`, {
+      method: "PUT",
+      credentials: "include",   // 🔥 THIS sends cookies automatically
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData,
+    });
+
+
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (error) {
+    console.error("Update provider error:", error);
+    return null;
+  }
+};
+
+export const getProfile = async () => {
+
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) return null;
+
+    const res = await fetch(`${API_URL}/provider/dashboard`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (error) {
+    console.error("Get profile error:", error);
+    return null;
+  }
+}
+
 
 export interface Meal {
   id: string;
@@ -90,29 +137,10 @@ export async function getProvider(id: string): Promise<ProviderResponse<Provider
   }
 }
 
-export async function getProfile() {
-  
-  try {
-   const cookieStore = await cookies();   
-    const token = cookieStore.get("token")?.value;
-    if (!token) return null;
-
-    const res = await fetch(`${API_URL}/providers/dashboard`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (error) {
-    console.error("Get profile error:", error);
-    return null;
-  }
-}
 
 export async function getMeals() {
   try {
-  const cookieStore = await cookies();  
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) return [];
 
@@ -133,7 +161,7 @@ export async function getMeals() {
 
 export async function getOrders() {
   try {
-   const cookieStore = await cookies();  
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) return [];
 
@@ -158,15 +186,15 @@ export const updateProviderOrderStatus = async (
   status: string
 ) => {
 
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
 
   const res = await fetch(`${API_URL}/provider/order/${orderId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-       Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ status }),
     credentials: "include",

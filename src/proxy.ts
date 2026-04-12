@@ -1,39 +1,40 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getCurrentUser } from "./services/auth";
-
+import { jwtDecode } from "jwt-decode";
 
 const ALLOWED_ROLE = ["ADMIN", "PROVIDER", "CUSTOMER"];
 const PUBLIC_ROUTE = ["/login", "/register"];
 
-// This function can be marked `async` if using `await` inside
-export async function proxy(request: NextRequest) {
-  const { pathname, origin } = request.nextUrl;
+type DecodedUser = {
+  role?: string;
+};
 
-  const user = await getCurrentUser();
+export function proxy(request: NextRequest) {
+  const { pathname, origin } = request.nextUrl;
 
   if (PUBLIC_ROUTE.includes(pathname)) {
     return NextResponse.next();
   }
 
-  if (!user) {
-    return NextResponse.redirect(
-      new URL(`/login?redirect=${pathname}`, origin),
-    );
+  const token = request.cookies.get("token")?.value;
+
+  if (!token) {
+    return NextResponse.redirect(new URL(`/login?redirect=${pathname}`, origin));
   }
 
-  if (!ALLOWED_ROLE.includes(user.role)) {
-    return NextResponse.redirect(
-      new URL(`/login?redirect=${pathname}`, origin),
-    );
-  }
+  try {
+    const user = jwtDecode<DecodedUser>(token);
 
-  return NextResponse.next();
+    if (!user?.role || !ALLOWED_ROLE.includes(user.role)) {
+      return NextResponse.redirect(new URL(`/login?redirect=${pathname}`, origin));
+    }
+
+    return NextResponse.next();
+  } catch {
+    return NextResponse.redirect(new URL(`/login?redirect=${pathname}`, origin));
+  }
 }
 
-// Alternatively, you can use a default export:
-// export default function proxy(request: NextRequest) { ... }
-
 export const config = {
-  matcher: "/dashboard",
+  matcher: ["/dashboard/:path*"],
 };

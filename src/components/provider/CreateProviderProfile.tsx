@@ -1,127 +1,534 @@
 "use client";
 
-import { createProvider, getProfile } from "@/services/provider";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { toast } from "sonner";
+import {
+  Building2,
+  MapPin,
+  Phone,
+  FileText,
+  UtensilsCrossed,
+  Clock3,
+  Truck,
+  ImageIcon,
+  Save,
+  Loader2,
+  Pencil,
+  CheckCircle2,
+  Store,
+} from "lucide-react";
+import {
+  createProvider,
+  getProfile,
+  updateProvider,
+} from "@/services/provider";
 
-const CreateProviderProfile = () => {
-  const [formData, setFormData] = useState({
-    restaurantName: "",
-    address: "",
-   phone: ""
-  });
+type ProviderProfile = {
+  id?: string;
+  restaurantName?: string;
+  restaurantLogo?: string | null;
+  bannerImage?: string | null;
+  address?: string;
+  phone?: string;
+  description?: string | null;
+  cuisineType?: string | null;
+  openingTime?: string | null;
+  closingTime?: string | null;
+  deliveryArea?: string | null;
+  isApproved?: boolean;
+  averageRating?: number;
+  totalReviews?: number;
+};
 
-  const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-  const [provider, setProvider] = useState(null);
+const initialForm = {
+  restaurantName: "",
+  address: "",
+  phone: "",
+  description: "",
+  cuisineType: "",
+  openingTime: "",
+  closingTime: "",
+  deliveryArea: "",
+};
 
+export default function ProviderProfileManager() {
+  const [provider, setProvider] = useState<ProviderProfile | null>(null);
+  const [formData, setFormData] = useState(initialForm);
 
-useEffect(() => {
-  const loadProvider = async () => {
-    const data = await getProfile();
-    setProvider(data);
-  };
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
 
-  loadProvider();
-}, []);
+  const [logoPreview, setLogoPreview] = useState("");
+  const [bannerPreview, setBannerPreview] = useState("");
 
-  console.log(provider);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const isEditMode = !!provider?.id;
+
+  useEffect(() => {
+    const loadProvider = async () => {
+      try {
+        setPageLoading(true);
+        const res = await getProfile();
+
+        console.log(res)
+
+        const data = res?.data || res?.data || res || null;
+
+        if (data && data.id) {
+          setProvider(data);
+          setFormData({
+            restaurantName: data.restaurantName || "",
+            address: data.address || "",
+            phone: data.phone || "",
+            description: data.description || "",
+            cuisineType: data.cuisineType || "",
+            openingTime: data.openingTime || "",
+            closingTime: data.closingTime || "",
+            deliveryArea: data.deliveryArea || "",
+          });
+          setLogoPreview(data.restaurantLogo || "");
+          setBannerPreview(data.bannerImage || "");
+        }
+      } catch {
+        setProvider(null);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
+    loadProvider();
+  }, []);
+
+  useEffect(() => {
+    if (!logoFile) return;
+    const url = URL.createObjectURL(logoFile);
+    setLogoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [logoFile]);
+
+  useEffect(() => {
+    if (!bannerFile) return;
+    const url = URL.createObjectURL(bannerFile);
+    setBannerPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [bannerFile]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submit
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  setSuccessMsg("");
-  setErrorMsg("");
+  const approvalBadge = useMemo(() => {
+    if (!provider) return null;
 
-  const result = await createProvider(formData);
+    if (provider.isApproved) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-500/15 dark:text-green-300">
+          <CheckCircle2 className="h-3.5 w-3.5" />
+          Approved
+        </span>
+      );
+    }
 
-  if (result) {
-    setSuccessMsg("Profile created successfully!");
-  } else {
-    setErrorMsg("Failed to create profile");
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
+        Pending Approval
+      </span>
+    );
+  }, [provider]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      setSubmitting(true);
+
+      const payload = new FormData();
+      payload.append("restaurantName", formData.restaurantName.trim());
+      payload.append("address", formData.address.trim());
+      payload.append("phone", formData.phone.trim());
+      payload.append("description", formData.description.trim());
+      payload.append("cuisineType", formData.cuisineType.trim());
+      payload.append("openingTime", formData.openingTime.trim());
+      payload.append("closingTime", formData.closingTime.trim());
+      payload.append("deliveryArea", formData.deliveryArea.trim());
+
+      if (logoFile) payload.append("restaurantLogo", logoFile);
+      if (bannerFile) payload.append("bannerImage", bannerFile);
+
+      const res = isEditMode
+        ? await updateProvider(payload)
+        : await createProvider(payload);
+
+      const updated = res?.data || res?.data || null;
+
+      if (!updated) {
+        toast.error(
+          isEditMode ? "Failed to update provider profile" : "Failed to create provider profile"
+        );
+        return;
+      }
+
+      setProvider(updated);
+      setLogoFile(null);
+      setBannerFile(null);
+
+      setFormData({
+        restaurantName: updated.restaurantName || "",
+        address: updated.address || "",
+        phone: updated.phone || "",
+        description: updated.description || "",
+        cuisineType: updated.cuisineType || "",
+        openingTime: updated.openingTime || "",
+        closingTime: updated.closingTime || "",
+        deliveryArea: updated.deliveryArea || "",
+      });
+
+      setLogoPreview(updated.restaurantLogo || "");
+      setBannerPreview(updated.bannerImage || "");
+
+      toast.success(
+        isEditMode
+          ? "Provider profile updated successfully"
+          : "Provider profile created successfully"
+      );
+    } catch (error: any) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (pageLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+            Loading provider profile...
+          </span>
+        </div>
+      </div>
+    );
   }
 
-  setLoading(false);
-};
-
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-md relative">
-      <h1 className="text-2xl font-bold mb-4">Create Provider Profile</h1>
+    <section className="mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8">
+      <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
+        <aside className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="relative h-40 w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
+            {bannerPreview ? (
+              <Image
+                src={bannerPreview}
+                alt="Restaurant banner"
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-slate-400">
+                <ImageIcon className="h-8 w-8" />
+              </div>
+            )}
+          </div>
 
-      {/* Toast Messages */}
-      {successMsg && (
-        <div className="absolute top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-md animate-slide-in">
-          {successMsg}
+          <div className="-mt-10 flex justify-center">
+            <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-md dark:border-slate-900 dark:bg-slate-800">
+              {logoPreview ? (
+                <Image
+                  src={logoPreview}
+                  alt="Restaurant logo"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-slate-400">
+                  <Store className="h-8 w-8" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-4 text-center">
+            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+              {provider?.restaurantName || "Create Provider Profile"}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {provider?.cuisineType || "Restaurant information and branding"}
+            </p>
+
+            <div className="mt-3">{approvalBadge}</div>
+          </div>
+
+          <div className="mt-6 space-y-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-950/50">
+            <div className="flex items-start gap-3">
+              <MapPin className="mt-0.5 h-4 w-4 text-slate-400" />
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                  Address
+                </p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {provider?.address || "Not added yet"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Phone className="mt-0.5 h-4 w-4 text-slate-400" />
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                  Phone
+                </p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {provider?.phone || "Not added yet"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Clock3 className="mt-0.5 h-4 w-4 text-slate-400" />
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                  Hours
+                </p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {provider?.openingTime || "N/A"} - {provider?.closingTime || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Truck className="mt-0.5 h-4 w-4 text-slate-400" />
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                  Delivery Area
+                </p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {provider?.deliveryArea || "Not added yet"}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="rounded-xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-900">
+                <p className="text-xs text-slate-400">Avg Rating</p>
+                <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
+                  {provider?.averageRating ?? 0}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-3 text-center dark:border-slate-800 dark:bg-slate-900">
+                <p className="text-xs text-slate-400">Reviews</p>
+                <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
+                  {provider?.totalReviews ?? 0}
+                </p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-7">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white md:text-3xl">
+                {isEditMode ? "Update Provider Profile" : "Create Provider Profile"}
+              </h1>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Add your restaurant details, branding, timing, and delivery information.
+              </p>
+            </div>
+
+            {isEditMode && (
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
+                <Pencil className="h-4 w-4" />
+                Edit Mode
+              </div>
+            )}
+          </div>
+
+          <form onSubmit={handleSubmit} className="grid gap-5 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Restaurant Name
+              </label>
+              <div className="relative">
+                <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  name="restaurantName"
+                  value={formData.restaurantName}
+                  onChange={handleChange}
+                  placeholder="Enter restaurant name"
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Phone
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Enter phone number"
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Address
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-4 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Enter restaurant address"
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Cuisine Type
+              </label>
+              <div className="relative">
+                <UtensilsCrossed className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  name="cuisineType"
+                  value={formData.cuisineType}
+                  onChange={handleChange}
+                  placeholder="Bangladeshi, Fast Food, Thai..."
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Delivery Area
+              </label>
+              <div className="relative">
+                <Truck className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  name="deliveryArea"
+                  value={formData.deliveryArea}
+                  onChange={handleChange}
+                  placeholder="Dhanmondi, Mirpur, Uttara..."
+                  className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Opening Time
+              </label>
+              <input
+                type="text"
+                name="openingTime"
+                value={formData.openingTime}
+                onChange={handleChange}
+                placeholder="10:00 AM"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Closing Time
+              </label>
+              <input
+                type="text"
+                name="closingTime"
+                value={formData.closingTime}
+                onChange={handleChange}
+                placeholder="11:00 PM"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Description
+              </label>
+              <div className="relative">
+                <FileText className="absolute left-3 top-4 h-4 w-4 text-slate-400" />
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={5}
+                  placeholder="Write a short description about your restaurant..."
+                  className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm outline-none focus:border-primary dark:border-slate-800 dark:bg-slate-950"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Restaurant Logo
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+                className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-950"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                Banner Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setBannerFile(e.target.files?.[0] || null)}
+                className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-950"
+              />
+            </div>
+
+            <div className="md:col-span-2 flex justify-end">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {isEditMode ? "Updating..." : "Creating..."}
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    {isEditMode ? "Update Profile" : "Create Profile"}
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
-      )}
-      {errorMsg && (
-        <div className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow-md animate-slide-in">
-          {errorMsg}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Restaurant Name */}
-        <div>
-          <label className="block font-medium mb-1">Restaurant Name</label>
-          <input
-            type="text"
-            name="restaurantName"
-            value={formData.restaurantName}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            placeholder="Enter restaurant name"
-            required
-          />
-        </div>
-
-        {/* Address */}
-        <div>
-          <label className="block font-medium mb-1">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            placeholder="Enter address"
-            required
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block font-medium mb-1">Phone</label>
-          <input
-  type="text"
-  name="phone"
-  value={formData.phone}
-  onChange={handleChange}
-  className="w-full border border-gray-300 rounded px-3 py-2"
-  placeholder="Enter phone"
-  required
-/>
-        </div>
-
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
-          disabled={loading}
-        >
-          {loading ? "Creating..." : "Create Profile"}
-        </button>
-      </form>
-    </div>
+      </div>
+    </section>
   );
-};
-
-export default CreateProviderProfile;
+}

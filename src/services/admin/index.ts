@@ -4,6 +4,79 @@ import { cookies } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
+export type TDashboardOverview = {
+  totalUsers: number;
+  totalProviders: number;
+  totalMeals: number;
+  totalOrders: number;
+  activeUsers: number;
+  pendingOrders: number;
+  deliveredOrders: number;
+  totalRevenue: number;
+};
+
+export type TRecentOrder = {
+  id: string;
+  customerId: string;
+  providerId: string;
+  status: string;
+  paymentStatus: string;
+  paymentMethod: string;
+  address: string;
+  phone: string;
+  notes: string;
+  totalPrice: string;
+  createdAt: string;
+  updatedAt: string;
+  customer?: {
+    name?: string;
+    email?: string;
+  };
+  provider?: {
+    restaurantName?: string;
+  };
+};
+
+export type TAdminDashboardStatsResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    overview: TDashboardOverview;
+    recentOrders: TRecentOrder[];
+  };
+};
+
+export const getAdminDashboardStats = async () => {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+      return null;
+    }
+
+    const res = await fetch(`${API_URL}/admin/dashboard-stats`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result?.message || "Failed to fetch dashboard stats");
+    }
+
+    return result;
+  } catch (error) {
+    console.error("getAdminDashboardStats error:", error);
+    return null;
+  }
+};
+
 // Get all users
 export async function getUsers() {
   try {

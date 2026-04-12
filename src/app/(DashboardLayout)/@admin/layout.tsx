@@ -3,17 +3,18 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { 
-  Menu, 
-  X, 
-  LayoutDashboard, 
-  Users, 
-  ShoppingBag, 
-  Grid2X2, 
-  Settings,
+import {
+  Menu,
+  X,
+  LayoutDashboard,
+  Users,
+  ShoppingBag,
+  Grid2X2,
   ShieldCheck,
   LogOut,
-  ArrowLeft
+  ArrowLeft,
+  Store,
+  UtensilsCrossed,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,9 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Users", href: "/dashboard/users", icon: Users },
+  { name: "Providers", href: "/dashboard/providers", icon: Store },
   { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag },
+  { name: "Meals", href: "/dashboard/meals", icon: UtensilsCrossed },
   { name: "Categories", href: "/dashboard/categories", icon: Grid2X2 },
 ];
 
@@ -34,122 +37,120 @@ export default function AdminLayout({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] flex">
-      {/* Mobile Sidebar Overlay */}
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
       {open && (
         <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
-          "fixed z-50 lg:static top-0 left-0 h-full w-72 bg-slate-900 text-slate-300 shadow-2xl p-6 transform transition-transform duration-300 ease-in-out flex flex-col",
-          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          "fixed inset-y-0 left-0 z-50 w-72 transform bg-background text-slate-300 transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+          open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Admin Brand */}
-        <div className="flex items-center justify-between mb-10 px-2">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="bg-green-500 p-2 rounded-lg group-hover:rotate-12 transition-transform">
-              <ShieldCheck className="text-white h-6 w-6" />
+        <div className="flex items-center justify-between px-6 py-6">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="rounded-2xl bg-green-500 p-3">
+              <ShieldCheck className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-white tracking-tight">FoodHub <span className="text-green-500">Admin</span></span>
+            <div>
+              <h2 className="text-2xl font-extrabold text-white">
+                FoodHub <span className="text-green-500">Admin</span>
+              </h2>
+            </div>
           </Link>
 
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="lg:hidden text-slate-400 hover:text-white" 
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-slate-400 hover:text-white lg:hidden"
             onClick={() => setOpen(false)}
           >
             <X className="h-6 w-6" />
           </Button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex flex-col gap-1.5 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-4">Main Management</p>
-          {navItems.map((item) => {
-            const active = pathname === item.href;
-            const Icon = item.icon;
+        <nav className="flex-1 px-4 py-4">
+          <p className="mb-4 px-3 text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
+            Main Management
+          </p>
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 group",
-                  active
-                    ? "bg-green-600 text-white shadow-lg shadow-green-900/20"
-                    : "hover:bg-slate-800 hover:text-white"
-                )}
-              >
-                <Icon size={20} className={cn(active ? "text-white" : "text-slate-500 group-hover:text-white")} />
-                {item.name}
-              </Link>
-            );
-          })}
+          <div className="space-y-2">
+            {navItems.map((item) => {
+              const active = pathname === item.href;
+              const Icon = item.icon;
 
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-semibold transition-all",
+                    active
+                      ? "bg-green-500 text-white"
+                      : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                  )}
+                  onClick={() => setOpen(false)}
+                >
+                  <Icon className="h-5 w-5" />
+                  {item.name}
+                </Link>
+              );
+            })}
+          </div>
         </nav>
 
-        {/* Sidebar Footer */}
-        <div className="pt-6 border-t border-slate-800 flex flex-col gap-2">
-          <Link href="/" className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-slate-500 hover:text-white transition-colors">
-            <ArrowLeft size={16} /> Back to Website
+        <div className="border-t border-slate-800 px-4 py-5 space-y-2">
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-slate-400 transition hover:bg-slate-900 hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Website
           </Link>
-          <button className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-red-400 hover:bg-red-500/10 transition-all">
-            <LogOut size={20} /> Logout
+
+          <button className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/10">
+            <LogOut className="h-4 w-4" />
+            Logout
           </button>
         </div>
       </aside>
 
-      {/* Main Section */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="lg:hidden text-slate-600" 
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white/90 px-6 py-4 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
               onClick={() => setOpen(true)}
             >
               <Menu className="h-6 w-6" />
             </Button>
-            <div className="hidden sm:block">
-              <h2 className="text-lg font-bold text-slate-800">
-                {navItems.find(i => i.href === pathname)?.name || "System Overview"}
-              </h2>
-            </div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              Dashboard
+            </h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col items-end mr-2 xs:flex">
-              <span className="text-xs font-bold text-slate-900">Admin User</span>
-              <span className="text-[10px] text-green-600 font-bold bg-green-50 px-1.5 rounded">Super Admin</span>
+          <div className="flex items-center gap-3">
+            <div className="hidden text-right sm:block">
+              <p className="text-sm font-bold text-slate-900 dark:text-white">
+                Admin User
+              </p>
+              <p className="text-xs font-semibold text-green-600">
+                Super Admin
+              </p>
             </div>
-            <div className="h-10 w-10 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center text-slate-600 font-bold overflow-hidden ring-2 ring-green-500/20">
-               AD
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-200 bg-slate-100 text-lg font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              AD
             </div>
           </div>
         </header>
 
-        {/* Content Area */}
-        <main className="p-4 md:p-8 max-w-1600px w-full mx-auto">
-          {/* Dashboard Stats Breadcrumb style (Optional) */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-slate-900 capitalize">
-              {pathname.split("/").pop()} Management
-            </h1>
-            <p className="text-sm text-slate-500">Monitor and manage your food hub platform data.</p>
-          </div>
-
-          {children}
-        </main>
+        <main className="w-full p-4 md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

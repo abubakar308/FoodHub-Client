@@ -185,16 +185,48 @@ export const getMealsByProvider = async (id: string) => {
 
 export const getMealById = async (id: string) => {
   try {
-
     const res = await fetch(`${API_URL}/meals/${id}`, {
       cache: "no-store",
     });
 
-    if (!res.ok) throw new Error("Meal not found");
-
     const data = await res.json();
     return { data, error: null };
   } catch (error: any) {
-    return { data: null, error: { message: error.message || "Something went wrong" } };
+    return {
+      data: null,
+      error: { message: error.message || "Failed to fetch meal" },
+    };
+  }
+};
+
+export const getRelatedMeals = async (categoryId: string, currentMealId?: string) => {
+  try {
+    const query = new URLSearchParams();
+    query.set("categoryId", categoryId);
+    query.set("limit", "4");
+
+    const res = await fetch(`${API_URL}/meals?${query.toString()}`, {
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    const meals = data?.data || [];
+    const filteredMeals = currentMealId
+      ? meals.filter((meal: any) => meal.id !== currentMealId).slice(0, 4)
+      : meals.slice(0, 4);
+
+    return {
+      data: {
+        ...data,
+        data: filteredMeals,
+      },
+      error: null,
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      error: { message: error.message || "Failed to fetch related meals" },
+    };
   }
 };

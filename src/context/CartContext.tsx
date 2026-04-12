@@ -31,8 +31,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     queryKey: ["cart"],
     queryFn: async () => {
       try {
-        const { data } = await axiosInstance.get("/mycart");
-        return data || { items: [], totalPrice: 0 };
+        const res = await axiosInstance.get("/mycart");
+        return res.data?.data || { items: [], totalPrice: 0 };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
           return { items: [], totalPrice: 0 };
@@ -40,21 +40,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         return { items: [], totalPrice: 0 };
       }
     },
-    staleTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60,
+    refetchOnWindowFocus: false,
     retry: false,
   });
-
   const cart = useMemo(
     () => cartData || { items: [], totalPrice: 0 },
     [cartData]
   );
 
   const count = useMemo(() => {
-    return cart.items.reduce(
-      (sum: number, item: CartItem) => sum + (item.quantity || 0),
-      0
-    );
+    return cart.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
   }, [cart.items]);
 
   const invalidateCart = async () => {

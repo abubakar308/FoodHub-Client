@@ -1,27 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import {
-  ShoppingCart,
   Utensils,
   Store,
   ArrowUpRight,
-  Loader2,
   Star,
   Clock,
 } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axiosInstance from "@/lib/axiosInstance";
 
 type Meal = {
   id: string;
   title: string;
   imageUrl?: string;
   description?: string;
-  price: number;
+  shortDescription?: string | null;
+  price: number | string;
   discountPrice?: number | string | null;
   preparationTime?: number;
   averageRating?: number;
@@ -30,32 +26,6 @@ type Meal = {
 };
 
 export default function MealCard({ meal }: { meal: Meal }) {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: async (mealId: string) => {
-      const { data } = await axiosInstance.post("/api/cart", { mealId });
-      return data;
-    },
-    onSuccess: async (res) => {
-      if (res?.success) {
-        toast.success(`${meal.title} added to cart! 😋`);
-        await queryClient.refetchQueries({ queryKey: ["cart"] });
-      } else {
-        toast.error(res?.message || "Failed to add to cart");
-      }
-    },
-    onError: () => {
-      toast.error("Something went wrong");
-    },
-  });
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    mutation.mutate(meal.id);
-  };
-
   const hasDiscount =
     meal.discountPrice &&
     Number(meal.discountPrice) < Number(meal.price);
@@ -63,15 +33,12 @@ export default function MealCard({ meal }: { meal: Meal }) {
   return (
     <Link href={`/meals/${meal.id}`} className="group block h-full">
       <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
-
-        {/* Hover Arrow */}
-        <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition">
-          <div className="rounded-full bg-background/80 backdrop-blur p-2 shadow-md text-primary">
+        <div className="absolute top-4 right-4 z-20 opacity-0 transition group-hover:opacity-100">
+          <div className="rounded-full bg-background/80 p-2 text-primary shadow-md backdrop-blur">
             <ArrowUpRight size={18} />
           </div>
         </div>
 
-        {/* Image */}
         <div className="relative h-52 w-full overflow-hidden">
           {meal?.imageUrl ? (
             <Image
@@ -86,17 +53,15 @@ export default function MealCard({ meal }: { meal: Meal }) {
             </div>
           )}
 
-          {/* Gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-          {/* Price */}
           <div className="absolute bottom-3 left-3">
             {hasDiscount ? (
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">
                   ৳{meal.discountPrice}
                 </span>
-                <span className="text-xs line-through text-white/80">
+                <span className="text-xs text-white/80 line-through">
                   ৳{meal.price}
                 </span>
               </div>
@@ -107,69 +72,52 @@ export default function MealCard({ meal }: { meal: Meal }) {
             )}
           </div>
 
-          {/* Discount badge */}
           {hasDiscount && (
-            <div className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+            <div className="absolute top-3 left-3 rounded-full bg-red-500 px-2 py-1 text-xs text-white">
               SALE
             </div>
           )}
         </div>
 
-        {/* Content */}
         <div className="flex flex-1 flex-col p-5">
-          
-          {/* Category + Provider */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+          <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
             <span className="rounded-full bg-muted px-2 py-1">
-              {meal.category?.name}
+              {meal.category?.name || "Meal"}
             </span>
 
-            <div className="flex items-center gap-1 max-w-[120px]">
+            <div className="flex max-w-[120px] items-center gap-1">
               <Store size={12} />
               <span className="truncate">
-                {meal.provider?.restaurantName}
+                {meal.provider?.restaurantName || "Provider"}
               </span>
             </div>
           </div>
 
-          {/* Title */}
-          <h3 className="text-lg font-bold text-card-foreground group-hover:text-primary transition line-clamp-1">
+          <h3 className="line-clamp-1 text-lg font-bold text-card-foreground transition group-hover:text-primary">
             {meal.title}
           </h3>
 
-          {/* Description */}
-          <p className="mt-2 text-sm text-muted-foreground line-clamp-2 flex-1">
-            {meal.description}
+          <p className="mt-2 line-clamp-2 flex-1 text-sm text-muted-foreground">
+            {meal.shortDescription || meal.description || "Delicious meal"}
           </p>
 
-          {/* Extra Info */}
           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <Star size={14} className="text-yellow-500" />
               {meal.averageRating || "0.0"}
             </div>
 
-            {meal.preparationTime && (
+            {meal.preparationTime ? (
               <div className="flex items-center gap-1">
                 <Clock size={14} />
                 {meal.preparationTime} min
               </div>
-            )}
+            ) : null}
           </div>
 
-          {/* Button */}
           <div className="mt-5">
-            <Button
-              onClick={handleAddToCart}
-              disabled={mutation.isPending}
-              className="w-full rounded-full font-semibold gap-2"
-            >
-              {mutation.isPending ? (
-                <Loader2 className="animate-spin" size={18} />
-              ) : (
-                <ShoppingCart size={18} />
-              )}
-              {mutation.isPending ? "Adding..." : "Add to Cart"}
+            <Button asChild className="w-full rounded-full font-semibold gap-2">
+              <span>View Details</span>
             </Button>
           </div>
         </div>
