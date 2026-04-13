@@ -115,7 +115,7 @@ export async function updateUserStatus(userId: string, status: "ACTIVE" | "SUSPE
     const token = cookieStore.get("token")?.value;
     if (!token) throw new Error("Unauthorized");
 
-    const res = await fetch(`${API_URL}/admin/user/${userId}/`, {
+    const res = await fetch(`${API_URL}/admin/users/${userId}/status`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,

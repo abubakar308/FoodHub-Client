@@ -71,18 +71,18 @@ export default function AdminMealsPage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center justify-between rounded-3xl border border-slate-200 bg-white px-6 py-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex items-center justify-between rounded-3xl border border-border bg-card px-6 py-5 shadow-sm">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white md:text-3xl">
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">
             Meals Management
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             {meals.length} meals listed on the platform
           </p>
         </div>
         <button
           onClick={fetchMeals}
-          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+          className="flex items-center gap-2 rounded-xl border border-border bg-muted px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-accent"
         >
           <RefreshCw className="h-4 w-4" />
           Refresh
@@ -90,34 +90,34 @@ export default function AdminMealsPage() {
       </div>
 
       {meals.length === 0 ? (
-        <div className="flex min-h-[30vh] flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
-          <UtensilsCrossed className="h-10 w-10 text-slate-400" />
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <div className="flex min-h-[30vh] flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-border bg-muted/40">
+          <UtensilsCrossed className="h-10 w-10 text-muted-foreground/30" />
+          <p className="text-sm font-medium text-muted-foreground">
             No meals found
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] text-sm">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800">
-                  <th className="px-4 py-4 text-left font-bold text-slate-500 dark:text-slate-400">
+                <tr className="border-b border-border">
+                  <th className="px-4 py-4 text-left font-bold text-muted-foreground">
                     Meal
                   </th>
-                  <th className="px-4 py-4 text-left font-bold text-slate-500 dark:text-slate-400">
+                  <th className="px-4 py-4 text-left font-bold text-muted-foreground">
                     Category
                   </th>
-                  <th className="px-4 py-4 text-left font-bold text-slate-500 dark:text-slate-400">
+                  <th className="px-4 py-4 text-left font-bold text-muted-foreground">
                     Provider
                   </th>
-                  <th className="px-4 py-4 text-left font-bold text-slate-500 dark:text-slate-400">
+                  <th className="px-4 py-4 text-left font-bold text-muted-foreground">
                     Price
                   </th>
-                  <th className="px-4 py-4 text-left font-bold text-slate-500 dark:text-slate-400">
+                  <th className="px-4 py-4 text-left font-bold text-muted-foreground">
                     Status
                   </th>
-                  <th className="px-4 py-4 text-left font-bold text-slate-500 dark:text-slate-400">
+                  <th className="px-4 py-4 text-left font-bold text-muted-foreground">
                     Actions
                   </th>
                 </tr>
@@ -126,11 +126,11 @@ export default function AdminMealsPage() {
                 {meals.map((meal) => (
                   <tr
                     key={meal.id}
-                    className="border-b border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/40"
+                    className="border-b border-border transition hover:bg-muted/40"
                   >
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
+                        <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl bg-muted">
                           {meal.imageUrl ? (
                             <Image
                               src={meal.imageUrl}
@@ -144,21 +144,21 @@ export default function AdminMealsPage() {
                             </div>
                           )}
                         </div>
-                        <span className="max-w-[180px] truncate font-semibold text-slate-900 dark:text-white">
+                        <span className="max-w-[180px] truncate font-semibold text-foreground">
                           {meal.title}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
+                    <td className="px-4 py-4 text-muted-foreground">
                       {meal.category?.name || "—"}
                     </td>
-                    <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
+                    <td className="px-4 py-4 text-muted-foreground">
                       {meal.provider?.restaurantName || "—"}
                     </td>
-                    <td className="px-4 py-4 font-semibold text-slate-900 dark:text-white">
+                    <td className="px-4 py-4 font-semibold text-foreground">
                       ৳{meal.discountPrice ?? meal.price}
                       {meal.discountPrice && (
-                        <span className="ml-1 text-xs text-slate-400 line-through">
+                        <span className="ml-1 text-xs text-muted-foreground/50 line-through">
                           ৳{meal.price}
                         </span>
                       )}

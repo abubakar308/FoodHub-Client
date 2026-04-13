@@ -100,16 +100,16 @@ export default function LoginForm({ className }: { className?: string }) {
   return (
     <section
       className={cn(
-        "min-h-screen flex items-center justify-center px-4 bg-slate-50/50",
+        "min-h-screen flex items-center justify-center px-4 bg-background",
         className
       )}
     >
-      <div className="w-full max-w-md rounded-[32px] border border-slate-100 bg-white p-10 shadow-2xl shadow-slate-200/50">
+      <div className="w-full max-w-md rounded-[32px] border border-border bg-card p-10 shadow-2xl shadow-slate-200/50 dark:shadow-none">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-black text-foreground tracking-tight">
             Welcome Back 👋
           </h1>
-          <p className="text-slate-500 font-medium mt-2">
+          <p className="text-muted-foreground font-medium mt-2">
             Log in to continue your Quickplatter journey
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function LoginForm({ className }: { className?: string }) {
                 type="email"
                 placeholder="name@example.com"
                 className={cn(
-                  "h-12 pl-10 rounded-xl border-slate-100 bg-slate-50/50 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium",
+                  "h-12 pl-10 rounded-xl border-border bg-muted/30 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium",
                   errors.email && "border-red-500 bg-red-50/30"
                 )}
                 value={email}
@@ -158,7 +158,7 @@ export default function LoginForm({ className }: { className?: string }) {
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className={cn(
-                  "h-12 pl-10 pr-10 rounded-xl border-slate-100 bg-slate-50/50 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium",
+                  "h-12 pl-10 pr-10 rounded-xl border-border bg-muted/30 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium",
                   errors.password && "border-red-500 bg-red-50/30"
                 )}
                 value={password}
@@ -182,7 +182,7 @@ export default function LoginForm({ className }: { className?: string }) {
 
           <Button
             type="submit"
-            className="w-full h-14 text-lg font-black bg-slate-900 hover:bg-green-600 text-white rounded-2xl shadow-xl shadow-slate-200 transition-all active:scale-[0.98] mt-2"
+            className="w-full h-14 text-lg font-black bg-foreground text-background hover:bg-green-600 hover:text-white rounded-2xl shadow-xl shadow-slate-200 dark:shadow-none transition-all active:scale-[0.98] mt-2"
             disabled={loading || googleLoading}
           >
             {loading ? (
@@ -197,11 +197,11 @@ export default function LoginForm({ className }: { className?: string }) {
         </form>
 
         <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Or continue with
           </span>
-          <div className="h-px flex-1 bg-slate-200" />
+          <div className="h-px flex-1 bg-border" />
         </div>
 
         <div className="flex justify-center">
@@ -219,7 +219,7 @@ export default function LoginForm({ className }: { className?: string }) {
           )}
         </div>
 
-        <p className="mt-8 text-center text-sm font-medium text-slate-500">
+        <p className="mt-8 text-center text-sm font-medium text-muted-foreground">
           New to Quickplatter?{" "}
           <Link
             href="/register"

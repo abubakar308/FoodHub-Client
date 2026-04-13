@@ -28,7 +28,7 @@ export async function addCategory(name: string) {
     const token = cookieStore.get("token")?.value;
     if (!token) throw new Error("Unauthorized");
 
-    const res = await fetch(`${API_URL}/admin/categories`, {
+    const res = await fetch(`${API_URL}/categories`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

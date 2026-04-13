@@ -2,7 +2,8 @@
 import { getUsers, updateUserStatus } from "@/services/admin";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, ShieldCheck } from "lucide-react"; // আইকন ব্যবহারের জন্য
+import { ShieldAlert, ShieldCheck } from "lucide-react"; 
+import { TableSkeleton } from "@/components/shared/Skeletons";
 
 type User = {
   id: string;
@@ -43,38 +44,43 @@ export default function UserManagementPage() {
     }
   };
 
-  if (loading) return <p className="text-center p-6 text-gray-500">Loading users...</p>;
-  if (!users.length) return <p className="text-center p-6 text-gray-500">No users found</p>;
+  if (loading)
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        <TableSkeleton rows={8} cols={6} />
+      </div>
+    );
+  if (!users.length) return <p className="text-center p-6 text-muted-foreground">No users found</p>;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">User Management</h1>
-        <p className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+        <h1 className="text-3xl font-bold text-foreground">User Management</h1>
+        <p className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
           Total Users: {users.length}
         </p>
       </div>
 
-      <div className="overflow-x-auto border border-gray-200 rounded-xl">
-        <table className="min-w-full bg-white overflow-hidden">
-          <thead className="bg-gray-50 border-b border-gray-200">
+      <div className="overflow-x-auto border border-border rounded-xl">
+        <table className="min-w-full bg-card overflow-hidden">
+          <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="text-left p-4 font-semibold text-gray-600">Name</th>
-              <th className="text-left p-4 font-semibold text-gray-600">Email</th>
-              <th className="text-left p-4 font-semibold text-gray-600">Role</th>
-              <th className="text-left p-4 font-semibold text-gray-600">Status</th>
-              <th className="text-left p-4 font-semibold text-gray-600">Created At</th>
-              <th className="text-right p-4 font-semibold text-gray-600">Action</th>
+              <th className="text-left p-4 font-semibold text-muted-foreground">Name</th>
+              <th className="text-left p-4 font-semibold text-muted-foreground">Email</th>
+              <th className="text-left p-4 font-semibold text-muted-foreground">Role</th>
+              <th className="text-left p-4 font-semibold text-muted-foreground">Status</th>
+              <th className="text-left p-4 font-semibold text-muted-foreground">Created At</th>
+              <th className="text-right p-4 font-semibold text-muted-foreground">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {users.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50 transition">
-                <td className="p-4 font-medium text-gray-900">{user.name}</td>
-                <td className="p-4 text-gray-600">{user.email}</td>
+              <tr key={user.id} className="hover:bg-muted/30 transition">
+                <td className="p-4 font-medium text-foreground">{user.name}</td>
+                <td className="p-4 text-muted-foreground">{user.email}</td>
                 <td className="p-4">
                   <span className={`text-xs font-bold px-2 py-1 rounded ${
-                    user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                    user.role === 'ADMIN' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400' : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
                   }`}>
                     {user.role}
                   </span>
@@ -83,14 +89,14 @@ export default function UserManagementPage() {
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       user.status === "ACTIVE"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
+                        ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                        : "bg-red-500/10 text-red-600 dark:text-red-400"
                     }`}
                   >
                     {user.status}
                   </span>
                 </td>
-                <td className="p-4 text-gray-500 text-sm">
+                <td className="p-4 text-muted-foreground text-sm">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </td>
                 <td className="p-4 text-right">

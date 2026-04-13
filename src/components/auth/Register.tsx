@@ -81,13 +81,13 @@ const SignupPage = () => {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-4 bg-slate-50/50">
-      <div className="w-full max-w-md rounded-[32px] border border-slate-100 bg-white p-10 shadow-2xl shadow-slate-200/50">
+    <section className="min-h-screen flex items-center justify-center px-4 bg-background">
+      <div className="w-full max-w-md rounded-[32px] border border-border bg-card p-10 shadow-2xl shadow-slate-200/50 dark:shadow-none">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-black text-foreground tracking-tight">
             Create Account 🚀
           </h1>
-          <p className="text-slate-500 font-medium mt-2">
+          <p className="text-muted-foreground font-medium mt-2">
             Join Quickplatter and start eating fresh
           </p>
         </div>
@@ -101,7 +101,7 @@ const SignupPage = () => {
               <UserCircle className="absolute left-3 top-3 text-slate-400" size={18} />
               <Input
                 placeholder="John Doe"
-                className="h-12 pl-10 rounded-xl border-slate-100 focus:border-green-500 focus:ring-green-500/10 transition-all"
+                className="h-12 pl-10 rounded-xl border-border bg-muted/30 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -118,7 +118,7 @@ const SignupPage = () => {
               <Input
                 type="email"
                 placeholder="name@example.com"
-                className="h-12 pl-10 rounded-xl border-slate-100 focus:border-green-500 focus:ring-green-500/10 transition-all"
+                className="h-12 pl-10 rounded-xl border-border bg-muted/30 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -135,7 +135,7 @@ const SignupPage = () => {
               <Input
                 type="password"
                 placeholder="••••••••"
-                className="h-12 pl-10 rounded-xl border-slate-100 focus:border-green-500 focus:ring-green-500/10 transition-all"
+                className="h-12 pl-10 rounded-xl border-border bg-muted/30 focus:border-green-500 focus:ring-green-500/10 transition-all font-medium"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -150,7 +150,7 @@ const SignupPage = () => {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
-              className="w-full h-12 rounded-xl border border-slate-100 px-4 text-sm font-bold text-slate-700 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-green-500/10 transition-all appearance-none cursor-pointer"
+              className="w-full h-12 rounded-xl border border-border px-4 text-sm font-bold text-foreground bg-muted/30 focus:outline-none focus:ring-2 focus:ring-green-500/10 transition-all appearance-none cursor-pointer"
             >
               <option value="CUSTOMER">🍲 Hungry Customer</option>
               <option value="PROVIDER">👨‍🍳 Food Provider</option>
@@ -158,7 +158,7 @@ const SignupPage = () => {
           </div>
 
           <Button
-            className="w-full h-14 text-lg font-black bg-green-600 hover:bg-green-700 rounded-2xl shadow-lg shadow-green-100 transition-all active:scale-[0.98]"
+            className="w-full h-14 text-lg font-black bg-primary text-primary-foreground hover:bg-green-700 rounded-2xl shadow-lg shadow-green-100 dark:shadow-none transition-all active:scale-[0.98]"
             disabled={loading || googleLoading}
           >
             {loading ? (
@@ -172,16 +172,16 @@ const SignupPage = () => {
         </form>
 
         <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Or continue with
           </span>
-          <div className="h-px flex-1 bg-slate-200" />
+          <div className="h-px flex-1 bg-border" />
         </div>
 
         <div className="flex justify-center">
           {googleLoading ? (
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <Loader2 className="animate-spin" size={18} />
               Processing Google auth...
             </div>
@@ -194,7 +194,7 @@ const SignupPage = () => {
           )}
         </div>
 
-        <p className="mt-8 text-center text-sm font-medium text-slate-500">
+        <p className="mt-8 text-center text-sm font-medium text-muted-foreground">
           Already have an account?{" "}
           <a
             href="/login"

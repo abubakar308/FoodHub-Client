@@ -1,28 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { 
-  Menu, 
-  X, 
-  LayoutDashboard, 
-  UtensilsCrossed, 
-  ShoppingBag, 
-  UserCircle, 
-  AlertCircle,
+import {
+  Menu,
+  X,
+  LayoutDashboard,
+  UtensilsCrossed,
+  ShoppingBag,
   PlusCircle,
-  ArrowLeft
+  ArrowLeft,
+  Store,
 } from "lucide-react";
-import { getProfile } from "@/services/provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Manage Menu", href: "/dashboard/manage-menu", icon: UtensilsCrossed }, 
-  { name: "Add New Meal", href: "/dashboard/add-menu", icon: PlusCircle }, 
-  { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag }
+  { name: "Manage Menu", href: "/dashboard/manage-menu", icon: UtensilsCrossed },
+  { name: "Add New Meal", href: "/dashboard/add-menu", icon: PlusCircle },
+  { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag },
+  { name: "My Profile", href: "/dashboard/provider-profile", icon: Store },
 ];
 
 export default function ProviderLayout({
@@ -32,52 +32,44 @@ export default function ProviderLayout({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const profile = await getProfile();
-        setHasProfile(!!profile);
-      } catch (err) {
-        console.error("Failed to fetch profile:", err);
-        setHasProfile(false);
-      }
-    }
-    fetchProfile();
-  }, []);
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] flex">
-      {/* Mobile overlay */}
+    <div className="flex min-h-screen bg-secondary/30">
       {open && (
         <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static z-50 top-0 left-0 h-full w-72 bg-white border-r border-slate-200 p-6 transform transition-transform duration-300 ease-in-out flex flex-col",
-          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          "fixed left-0 top-0 z-50 flex h-full w-72 transform flex-col border-r border-border bg-card p-6 transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+          open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between mb-10 px-2">
+        <div className="mb-10 flex items-center justify-between px-2">
           <Link href="/" className="flex flex-col">
-            <span className="text-2xl font-bold text-green-600 tracking-tight">Quickplatter</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Provider Panel</span>
+            <span className="text-2xl font-black tracking-tight text-primary">
+              QuickPlatter
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Provider Panel
+            </span>
           </Link>
 
-          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(false)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setOpen(false)}
+          >
             <X className="h-5 w-5" />
           </Button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex flex-col gap-1.5 flex-1">
+        <nav className="flex flex-1 flex-col gap-1.5">
           {navItems.map((item) => {
             const active = pathname === item.href;
             const Icon = item.icon;
@@ -88,10 +80,10 @@ export default function ProviderLayout({
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200",
+                  "flex items-center gap-3 rounded-xl px-4 py-3 font-semibold transition-all duration-200",
                   active
-                    ? "bg-green-600 text-white shadow-lg shadow-green-100"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 <Icon size={20} />
@@ -99,76 +91,60 @@ export default function ProviderLayout({
               </Link>
             );
           })}
-
-          {/* Create Provider Profile Notice */}
-          {hasProfile === false && (
-            <div className="mt-6 p-4 rounded-2xl bg-amber-50 border border-amber-100">
-              <div className="flex items-center gap-2 text-amber-700 mb-2">
-                <AlertCircle size={18} />
-                <span className="text-sm font-bold">Profile Missing</span>
-              </div>
-              <p className="text-xs text-amber-600 mb-3">Setup your store to start receiving orders.</p>
-              <Link href="/dashboard/create-provider-profile">
-                <Button size="sm" className="w-full bg-amber-500 hover:bg-amber-600 text-white gap-2 text-xs">
-                  <PlusCircle size={14} /> Create Profile
-                </Button>
-              </Link>
-            </div>
-          )}
         </nav>
 
-        {/* Bottom Section */}
-        <div className="border-t border-slate-100 pt-6 flex flex-col gap-2">
-          <Link
-            href="/profile"
-            className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all",
-              pathname === "/profile" ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50"
-            )}
-          >
-            <UserCircle size={20} />
-            My Account
-          </Link>
+        <div className="border-t border-border pt-6">
           <Link
             href="/"
-            className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft size={16} /> Back to Home
           </Link>
         </div>
       </aside>
 
-      {/* Main area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+      <div className="flex min-w-0 flex-1 flex-col transition-colors duration-300">
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background/80 px-6 py-4 backdrop-blur-md">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setOpen(true)}
+            >
               <Menu className="h-6 w-6" />
             </Button>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">
-                {navItems.find(i => i.href === pathname)?.name || "Provider Overview"}
+              <h2 className="text-lg font-black tracking-tight text-foreground">
+                {navItems.find((i) => i.href === pathname)?.name ||
+                  (pathname.includes("provider-profile")
+                    ? "Provider Profile"
+                    : "Provider Overview")}
               </h2>
-              <p className="text-xs text-slate-500 hidden sm:block">Welcome back, ready to serve? 👨‍🍳</p>
+              <p className="hidden text-[11px] font-bold uppercase tracking-wider text-muted-foreground sm:block">
+                Merchant Operations Hub 👨‍🍳
+              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-             <div className="hidden sm:flex flex-col items-end mr-2">
-                <span className="text-xs font-bold text-slate-800">Restaurant Status</span>
-                <span className="flex items-center gap-1.5 text-[10px] text-green-500 font-bold uppercase">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" /> Online
-                </span>
-             </div>
-             <div className="h-10 w-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
-                <UserCircle size={24} />
-             </div>
+            <ThemeToggle />
+            <div className="mr-2 hidden flex-col items-end sm:flex text-right">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Restaurant Status
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-black text-primary">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+                ONLINE
+              </span>
+            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-primary/20 bg-primary/10 text-primary transition-all hover:scale-105">
+              <Store size={22} />
+            </div>
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="p-4 md:p-8 max-w-7xl w-full mx-auto">
+        <main className="mx-auto w-full max-w-7xl p-4 md:p-8">
           {children}
         </main>
       </div>

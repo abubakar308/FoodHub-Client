@@ -10,28 +10,28 @@ type Provider = {
 export default function ProviderCard({ provider }: { provider: Provider }) {
   return (
     <Link href={`/providers/${provider.id}`} className="group block">
-      <div className="relative overflow-hidden rounded-[32px] border border-slate-100 bg-white p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-green-500/10 hover:border-green-100">
+      <div className="relative overflow-hidden rounded-[32px] border border-border bg-card p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-green-500/10 hover:border-primary/20">
         
         {/* Top Decorative Icon */}
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-green-600 transition-colors duration-500 group-hover:bg-green-600 group-hover:text-white">
+        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors duration-500 group-hover:bg-primary group-hover:text-primary-foreground">
           <Utensils size={28} />
         </div>
 
         {/* Content */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-extrabold text-slate-800 transition-colors group-hover:text-green-600">
+            <h3 className="text-xl font-extrabold text-foreground transition-colors group-hover:text-primary">
               {provider.restaurantName}
             </h3>
             {/* Mock Rating: if you have rating data, use it here */}
-            <div className="flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded-lg">
+            <div className="flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded-lg">
               <Star size={12} fill="currentColor" />
               <span>4.5</span>
             </div>
           </div>
 
-          <div className="flex items-start gap-1.5 text-slate-500">
-            <MapPin size={16} className="mt-0.5 shrink-0 text-slate-400" />
+          <div className="flex items-start gap-1.5 text-muted-foreground">
+            <MapPin size={16} className="mt-0.5 shrink-0 text-muted-foreground/60" />
             <p className="text-sm font-medium leading-tight line-clamp-2">
               {provider.address}
             </p>
@@ -39,11 +39,11 @@ export default function ProviderCard({ provider }: { provider: Provider }) {
         </div>
 
         {/* Action Footer */}
-        <div className="mt-6 flex items-center justify-between border-t border-slate-50 pt-4">
+        <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
             View Menu
           </span>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-all duration-300 group-hover:bg-green-600 group-hover:text-white group-hover:translate-x-1">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:translate-x-1">
             <ArrowRight size={16} />
           </div>
         </div>

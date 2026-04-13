@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { getAllOrders } from "@/services/admin";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Package, 
   MapPin, 
@@ -13,7 +14,8 @@ import {
   ArrowRight, 
   CheckCircle2, 
   Clock, 
-  XCircle 
+  XCircle, 
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -53,27 +55,58 @@ export default function AdminOrdersPage() {
   const getStatusDetails = (status: string) => {
     switch (status) {
       case "DELIVERED":
-        return { color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: CheckCircle2 };
+        return { color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20", icon: CheckCircle2 };
       case "PENDING":
-        return { color: "bg-amber-100 text-amber-700 border-amber-200", icon: Clock };
+        return { color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20", icon: Clock };
       case "CANCELLED":
-        return { color: "bg-rose-100 text-rose-700 border-rose-200", icon: XCircle };
+        return { color: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20", icon: XCircle };
       default:
-        return { color: "bg-slate-100 text-slate-700 border-slate-200", icon: Package };
+        return { color: "bg-muted text-muted-foreground border-border", icon: Package };
     }
   };
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-      <p className="text-slate-500 animate-pulse">Fetching global orders...</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="max-w-6xl mx-auto space-y-8 py-6">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-64 rounded-xl" />
+            <Skeleton className="h-5 w-48 rounded-lg" />
+          </div>
+          <Skeleton className="h-12 w-32 rounded-2xl" />
+        </header>
+
+        <div className="grid gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="rounded-3xl border border-border bg-card overflow-hidden shadow-sm">
+              <div className="px-6 py-4 bg-muted/40 border-b border-border flex justify-between">
+                <div className="flex gap-3">
+                    <Skeleton className="h-10 w-10 rounded-lg" />
+                    <Skeleton className="h-10 w-32 rounded-md" />
+                </div>
+                <Skeleton className="h-8 w-24 rounded-full" />
+              </div>
+              <div className="p-6 grid md:grid-cols-2 gap-8">
+                 <div className="space-y-4">
+                    <div className="flex gap-4"><Skeleton className="h-10 w-10 rounded-full" /><Skeleton className="h-10 w-48 rounded-md" /></div>
+                    <div className="flex gap-4"><Skeleton className="h-10 w-10 rounded-full" /><Skeleton className="h-10 w-48 rounded-md" /></div>
+                 </div>
+                 <Skeleton className="h-24 w-full rounded-2xl" />
+              </div>
+              <div className="px-6 py-4 border-t border-border flex justify-between items-center">
+                 <Skeleton className="h-6 w-64 rounded-md" />
+                 <Skeleton className="h-10 w-32 rounded-xl" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
 
   if (!orders.length) return (
-    <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
-      <Package className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-      <p className="text-xl font-semibold text-slate-600">No orders found.</p>
+    <div className="text-center py-20 bg-card rounded-3xl border border-dashed border-border">
+      <Package className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
+      <p className="text-xl font-semibold text-muted-foreground">No orders found.</p>
     </div>
   );
 
@@ -81,12 +114,12 @@ export default function AdminOrdersPage() {
     <div className="max-w-6xl mx-auto space-y-8 py-6">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Order Management</h1>
-          <p className="text-slate-500">Overview of all system transactions</p>
+          <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Order Management</h1>
+          <p className="text-muted-foreground">Overview of all system transactions</p>
         </div>
-        <div className="bg-white px-4 py-2 rounded-2xl shadow-sm border border-slate-100">
-          <span className="text-sm text-slate-500 font-medium">Total Volume: </span>
-          <span className="text-lg font-bold text-green-600">
+        <div className="bg-card px-4 py-2 rounded-2xl shadow-sm border border-border">
+          <span className="text-sm text-muted-foreground font-medium">Total Volume: </span>
+          <span className="text-lg font-bold text-primary">
             ${orders.reduce((acc, curr) => acc + Number(curr.totalPrice), 0).toLocaleString()}
           </span>
         </div>
@@ -97,21 +130,21 @@ export default function AdminOrdersPage() {
           const { color, icon: StatusIcon } = getStatusDetails(order.status);
           
           return (
-            <div key={order.id} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden hover:border-green-300 transition-all duration-300">
+            <div key={order.id} className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden hover:border-primary/20 transition-all duration-300">
               {/* Top Banner: Order ID & Status */}
-              <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+              <div className="px-6 py-4 bg-muted/40 border-b border-border flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="bg-white p-2 rounded-lg shadow-sm">
-                    <Package className="h-5 w-5 text-green-600" />
+                  <div className="bg-background p-2 rounded-lg shadow-sm border border-border">
+                    <Package className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Order ID</span>
-                    <p className="text-sm font-mono font-bold text-slate-700 leading-none mt-1">#{order.id.slice(-8).toUpperCase()}</p>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Order ID</span>
+                    <p className="text-sm font-mono font-bold text-foreground leading-none mt-1">#{order.id.slice(-8).toUpperCase()}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-4">
-                   <div className="hidden sm:flex items-center gap-2 text-slate-500 text-xs font-medium">
+                   <div className="hidden sm:flex items-center gap-2 text-muted-foreground text-xs font-medium">
                       <Calendar size={14} />
                       {new Date(order.createdAt).toLocaleDateString()}
                    </div>
@@ -131,9 +164,9 @@ export default function AdminOrdersPage() {
                       <Store className="text-blue-600 h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Restaurant</p>
-                      <p className="font-bold text-slate-800">{order.provider.restaurantName}</p>
-                      <p className="text-sm text-slate-500">{order.provider.address}</p>
+                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Restaurant</p>
+                      <p className="font-bold text-foreground">{order.provider.restaurantName}</p>
+                      <p className="text-sm text-muted-foreground">{order.provider.address}</p>
                     </div>
                   </div>
 
@@ -142,44 +175,44 @@ export default function AdminOrdersPage() {
                       <User className="text-purple-600 h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Customer</p>
-                      <p className="font-bold text-slate-800">{order.customer.name}</p>
-                      <p className="text-sm text-slate-500 font-medium">{order.customer.email}</p>
+                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Customer</p>
+                      <p className="font-bold text-foreground">{order.customer.name}</p>
+                      <p className="text-sm text-muted-foreground font-medium">{order.customer.email}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Right Side: Items Summary */}
-                <div className="bg-slate-50 rounded-2xl p-4 space-y-3">
-                   <p className="text-xs font-bold text-slate-400 uppercase mb-2">Order Items</p>
+                <div className="bg-muted/50 rounded-2xl p-4 space-y-3 border border-border">
+                   <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Order Items</p>
                    {order.items.map((item) => (
                      <div key={item.id} className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg overflow-hidden border bg-white shrink-0">
+                        <div className="h-10 w-10 rounded-lg overflow-hidden border border-border bg-background shrink-0">
                           <Image src={item.meal.imageUrl} alt={item.meal.title} width={40} height={40} className="object-cover h-full w-full" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-slate-700 truncate">{item.meal.title}</p>
-                          <p className="text-xs text-slate-500 font-medium">x{item.quantity} · ${item.price}</p>
+                          <p className="text-sm font-bold text-foreground truncate">{item.meal.title}</p>
+                          <p className="text-xs text-muted-foreground font-medium">x{item.quantity} · ${item.price}</p>
                         </div>
-                        <p className="text-sm font-bold text-slate-800">${(Number(item.price) * item.quantity).toFixed(2)}</p>
+                        <p className="text-sm font-bold text-foreground">${(Number(item.price) * item.quantity).toFixed(2)}</p>
                      </div>
                    ))}
                 </div>
               </div>
 
               {/* Footer: Address & Price */}
-              <div className="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <MapPin size={16} className="text-rose-500 shrink-0" />
+              <div className="px-6 py-4 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <MapPin size={16} className="text-primary shrink-0" />
                   <span className="text-sm font-medium">{order.address}</span>
                 </div>
                 
                 <div className="flex items-center gap-4 ml-auto">
                    <div className="text-right">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase">Grand Total</p>
-                      <p className="text-2xl font-black text-green-600 leading-none">${order.totalPrice}</p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Grand Total</p>
+                      <p className="text-2xl font-black text-primary leading-none">${order.totalPrice}</p>
                    </div>
-                   <button className="bg-slate-900 text-white p-2 rounded-xl hover:bg-green-600 transition-colors">
+                   <button className="bg-foreground text-background p-2 rounded-xl hover:bg-primary hover:text-primary-foreground transition-colors">
                       <ArrowRight size={20} />
                    </button>
                 </div>

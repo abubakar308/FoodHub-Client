@@ -5,6 +5,8 @@ import Link from "next/link";
 import { getCategories } from "@/services/categories";
 import { Loader2, Utensils, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CategorySkeleton } from "@/components/shared/Skeletons";
 
 type Category = {
   id: string;
@@ -47,11 +49,18 @@ export default function Categories() {
   /* ================= Loading ================= */
   if (loading)
     return (
-      <section className="py-16 flex flex-col items-center justify-center gap-3">
-        <Loader2 className="animate-spin text-primary" size={32} />
-        <p className="text-muted-foreground font-medium animate-pulse">
-          Loading categories...
-        </p>
+      <section className="py-16 bg-background">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+           <div className="text-center mb-12 space-y-4">
+              <Skeleton className="h-10 w-64 mx-auto rounded-xl" />
+              <Skeleton className="h-5 w-48 mx-auto rounded-lg" />
+           </div>
+           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <CategorySkeleton key={i} />
+              ))}
+           </div>
+        </div>
       </section>
     );
 

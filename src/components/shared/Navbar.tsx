@@ -15,6 +15,8 @@ import {
   UtensilsCrossed,
   Building2,
   House,
+  ShieldAlert,
+  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,8 +36,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getCurrentUser, logOut } from "@/services/auth";
+import { getCategories } from "@/services/categories";
 import { useCart } from "@/context/CartContext";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./ThemeToggle";
+import { Skeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/components/shared/Skeletons";
 
 const navItems = [
   { name: "Home", href: "/", icon: House },
@@ -56,17 +62,26 @@ const categoryItems = [
 
 export default function Navbar() {
   const [user, setUser] = useState<any | null>(null);
-  const { count } = useCart();
+  const [categories, setCategories] = useState<any[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const { count: cartCount } = useCart();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     const fetchData = async () => {
+      setCategoriesLoading(true);
       try {
-        const currentUser = await getCurrentUser();
+        const [currentUser, categoriesData] = await Promise.all([
+          getCurrentUser(),
+          getCategories(),
+        ]);
         setUser(currentUser);
+        setCategories(categoriesData || []);
       } catch {
         setUser(null);
+      } finally {
+        setCategoriesLoading(false);
       }
     };
 
@@ -150,15 +165,30 @@ export default function Navbar() {
               <DropdownMenuSeparator />
 
               <div className="grid grid-cols-2 gap-1 p-1">
-                {categoryItems.map((category) => (
-                  <DropdownMenuItem
-                    key={category.name}
-                    asChild
-                    className="rounded-xl px-3 py-2"
-                  >
-                    <Link href={category.href}>{category.name}</Link>
-                  </DropdownMenuItem>
-                ))}
+                {categoriesLoading ? (
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="px-3 py-2">
+                      <Skeleton className="h-4 w-full rounded-md" />
+                    </div>
+                  ))
+                ) : categories.length > 0 ? (
+                  categories.slice(0, 8).map((cat) => {
+                    const slug = cat.slug || cat.name.toLowerCase().replace(/\s+/g, "-");
+                    return (
+                      <DropdownMenuItem
+                        key={cat.id}
+                        asChild
+                        className="rounded-xl px-3 py-2"
+                      >
+                        <Link href={`/meals?category=${slug}`}>{cat.name}</Link>
+                      </DropdownMenuItem>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-2 py-4 text-center text-xs text-muted-foreground italic">
+                    No categories found
+                  </div>
+                )}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -166,17 +196,16 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-3 lg:flex">
           {user && user.role?.toUpperCase() === "CUSTOMER" && (
-            <Link
-              href="/dashboard/cart"
-              className="relative rounded-full border border-border/60 bg-card p-2.5 shadow-sm transition-all hover:border-primary/30 hover:bg-primary/5"
-              aria-label="Cart"
-            >
-              <ShoppingCart className="h-5 w-5 text-foreground/80" />
-              {count > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow">
-                  {count}
-                </span>
-              )}
+            <Link href="/dashboard/cart">
+              <Button variant="outline" className="relative gap-2 border-border hover:bg-accent rounded-full px-4">
+                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                <span className="hidden sm:inline text-foreground">Cart</span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-background">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
             </Link>
           )}
 
@@ -257,6 +286,7 @@ export default function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
+          <ThemeToggle />
         </div>
 
         <div className="lg:hidden">
@@ -270,6 +300,9 @@ export default function Navbar() {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
+            <div className="lg:hidden ml-2">
+               <ThemeToggle />
+            </div>
 
             <SheetContent
               side="right"
@@ -318,15 +351,28 @@ export default function Navbar() {
                   Popular Categories
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {categoryItems.map((category) => (
-                    <Link
-                      key={category.name}
-                      href={category.href}
-                      className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground/80 transition hover:border-primary/30 hover:text-primary"
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
+                  {categoriesLoading ? (
+                    Array.from({ length: 8 }).map((_, i) => (
+                      <Skeleton key={i} className="h-8 w-20 rounded-full" />
+                    ))
+                  ) : categories.length > 0 ? (
+                    categories.slice(0, 10).map((cat) => {
+                      const slug = cat.slug || cat.name.toLowerCase().replace(/\s+/g, "-");
+                      return (
+                        <Link
+                          key={cat.id}
+                          href={`/meals?category=${slug}`}
+                          className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground/80 transition hover:border-primary/30 hover:text-primary"
+                        >
+                          {cat.name}
+                        </Link>
+                      );
+                    })
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">
+                      No categories found
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -353,20 +399,17 @@ export default function Navbar() {
                     </div>
 
                     {user.role?.toUpperCase() === "CUSTOMER" && (
-                      <Link
-                        href="/dashboard/cart"
-                        className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
-                      >
-                        <span className="flex items-center gap-2">
-                          <ShoppingCart className="h-4 w-4" />
-                          Cart
-                        </span>
-                        {count > 0 && (
-                          <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
-                            {count}
-                          </span>
-                        )}
-                      </Link>
+                          <Link href="/dashboard/cart">
+              <Button variant="outline" className="relative gap-2 border-border hover:bg-accent rounded-full px-4 w-full">
+                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                <span className="text-foreground">Cart</span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-background">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
                     )}
 
                     <Link

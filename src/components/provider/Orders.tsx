@@ -17,6 +17,7 @@ import {
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "../ui/skeleton";
 
 
 const NEXT_STATUS_MAP: Record<string, string | null> = {
@@ -72,12 +73,46 @@ export default function ProviderOrdersPage() {
     }
   };
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[500px] gap-4 text-center">
-      <Loader2 className="animate-spin text-green-600" size={48} />
-      <p className="text-slate-500 font-medium animate-pulse">Incoming orders are being fetched...</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="max-w-5xl mx-auto space-y-8 py-6 px-4">
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-8">
+           <div className="space-y-2">
+              <Skeleton className="h-10 w-64 rounded-xl" />
+              <Skeleton className="h-4 w-48 rounded-lg" />
+           </div>
+           <Skeleton className="h-10 w-32 rounded-2xl" />
+        </header>
+
+        <div className="grid gap-8">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="rounded-[32px] border border-border bg-card overflow-hidden shadow-sm">
+               <div className="p-6 md:p-8 flex justify-between">
+                  <div className="flex gap-4">
+                     <Skeleton className="h-14 w-14 rounded-2xl" />
+                     <div className="space-y-2">
+                        <Skeleton className="h-6 w-48 rounded-md" />
+                        <Skeleton className="h-4 w-32 rounded-md" />
+                     </div>
+                  </div>
+                  <Skeleton className="h-12 w-32 rounded-xl" />
+               </div>
+               <div className="bg-muted/40 p-6 md:px-8 border-y border-border">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <Skeleton className="h-12 rounded-2xl" />
+                     <Skeleton className="h-12 rounded-2xl" />
+                     <Skeleton className="h-12 rounded-2xl" />
+                  </div>
+               </div>
+               <div className="p-6 md:px-8 flex justify-between items-center">
+                  <Skeleton className="h-10 w-32 rounded-xl" />
+                  <Skeleton className="h-12 w-48 rounded-2xl" />
+               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 py-6 px-4">

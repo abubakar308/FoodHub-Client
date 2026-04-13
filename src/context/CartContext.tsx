@@ -4,6 +4,7 @@ import axiosInstance from "@/lib/axiosInstance";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useMemo } from "react";
 import axios from "axios";
+import { getCart } from "@/services/order";
 
 type CartItem = {
   quantity: number;
@@ -31,12 +32,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     queryKey: ["cart"],
     queryFn: async () => {
       try {
-        const res = await axiosInstance.get("/mycart");
-        return res.data?.data || { items: [], totalPrice: 0 };
+        const response = await getCart();
+        return {
+          items: response?.items || [],
+          totalPrice: response?.totalPrice || 0,
+        };
       } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 401) {
-          return { items: [], totalPrice: 0 };
-        }
         return { items: [], totalPrice: 0 };
       }
     },

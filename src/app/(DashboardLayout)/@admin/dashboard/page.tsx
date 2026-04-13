@@ -104,11 +104,11 @@ export default async function AdminDashboardPage() {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-3xl border border-slate-200 bg-white px-6 py-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white md:text-3xl">
+      <div className="rounded-3xl border border-border bg-card px-6 py-5 shadow-sm">
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">
           Admin Dashboard
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-muted-foreground">
           Platform overview and recent order activity.
         </p>
       </div>
@@ -120,18 +120,18 @@ export default async function AdminDashboardPage() {
           return (
             <Card
               key={card.title}
-              className="rounded-3xl border-slate-200 shadow-sm transition hover:shadow-md dark:border-slate-800"
+              className="rounded-3xl border-border shadow-sm transition hover:shadow-md"
             >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                    <p className="text-sm font-semibold text-muted-foreground">
                       {card.title}
                     </p>
-                    <h3 className="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">
+                    <h3 className="mt-3 text-3xl font-extrabold text-foreground">
                       {card.value}
                     </h3>
-                    <p className="mt-2 text-xs text-slate-400">
+                    <p className="mt-2 text-xs text-muted-foreground/60">
                       {card.description}
                     </p>
                   </div>
@@ -148,12 +148,12 @@ export default async function AdminDashboardPage() {
 
       <AdminDashboardCharts overview={overview} />
 
-      <Card className="rounded-3xl border-slate-200 shadow-sm dark:border-slate-800">
+      <Card className="rounded-3xl border-border shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">
+          <CardTitle className="text-xl font-bold text-foreground">
             Recent Orders
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             Latest orders from the platform.
           </CardDescription>
         </CardHeader>
@@ -162,15 +162,15 @@ export default async function AdminDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[950px] text-sm">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800">
-                  <th className="px-3 py-3 text-left font-bold text-slate-500">Customer</th>
-                  <th className="px-3 py-3 text-left font-bold text-slate-500">Email</th>
-                  <th className="px-3 py-3 text-left font-bold text-slate-500">Provider</th>
-                  <th className="px-3 py-3 text-left font-bold text-slate-500">Amount</th>
-                  <th className="px-3 py-3 text-left font-bold text-slate-500">Payment</th>
-                  <th className="px-3 py-3 text-left font-bold text-slate-500">Status</th>
-                  <th className="px-3 py-3 text-left font-bold text-slate-500">Address</th>
-                  <th className="px-3 py-3 text-left font-bold text-slate-500">Created</th>
+                <tr className="border-b border-border">
+                  <th className="px-3 py-3 text-left font-bold text-muted-foreground">Customer</th>
+                  <th className="px-3 py-3 text-left font-bold text-muted-foreground">Email</th>
+                  <th className="px-3 py-3 text-left font-bold text-muted-foreground">Provider</th>
+                  <th className="px-3 py-3 text-left font-bold text-muted-foreground">Amount</th>
+                  <th className="px-3 py-3 text-left font-bold text-muted-foreground">Payment</th>
+                  <th className="px-3 py-3 text-left font-bold text-muted-foreground">Status</th>
+                  <th className="px-3 py-3 text-left font-bold text-muted-foreground">Address</th>
+                  <th className="px-3 py-3 text-left font-bold text-muted-foreground">Created</th>
                 </tr>
               </thead>
 
@@ -179,21 +179,21 @@ export default async function AdminDashboardPage() {
                   recentOrders.map((order: any) => (
                     <tr
                       key={order.id}
-                      className="border-b border-slate-100 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/40"
+                      className="border-b border-border transition hover:bg-muted/40"
                     >
-                      <td className="px-3 py-4 font-medium text-slate-900 dark:text-white">
+                      <td className="px-3 py-4 font-medium text-foreground">
                         {order.customer?.name?.trim() || "N/A"}
                       </td>
-                      <td className="px-3 py-4 text-slate-600 dark:text-slate-300">
+                      <td className="px-3 py-4 text-muted-foreground">
                         {order.customer?.email || "N/A"}
                       </td>
-                      <td className="px-3 py-4 text-slate-600 dark:text-slate-300">
+                      <td className="px-3 py-4 text-muted-foreground">
                         {order.provider?.restaurantName || "N/A"}
                       </td>
-                      <td className="px-3 py-4 font-semibold text-slate-900 dark:text-white">
+                      <td className="px-3 py-4 font-semibold text-foreground">
                         ৳{Number(order.totalPrice || 0)}
                       </td>
-                      <td className="px-3 py-4 text-slate-600 dark:text-slate-300">
+                      <td className="px-3 py-4 text-muted-foreground">
                         {order.paymentMethod}
                       </td>
                       <td className="px-3 py-4">
@@ -217,7 +217,7 @@ export default async function AdminDashboardPage() {
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-3 py-10 text-center text-slate-500 dark:text-slate-400"
+                      className="px-3 py-10 text-center text-muted-foreground"
                     >
                       No recent orders found.
                     </td>

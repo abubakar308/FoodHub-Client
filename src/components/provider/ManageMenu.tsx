@@ -18,6 +18,8 @@ import { getProfile } from "@/services/provider";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { deleteMeal } from "@/services/meal";
+import { Skeleton } from "@/components/ui/skeleton";
+import { MealCardSkeleton } from "@/components/shared/Skeletons";
 
 export default function ManageMealsPage() {
   const [meals, setMeals] = useState<any[]>([]);
@@ -70,25 +72,35 @@ export default function ManageMealsPage() {
     meal.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <Loader2 className="h-10 w-10 text-green-600 animate-spin mb-4" />
-        <p className="text-slate-500 font-medium">Accessing your kitchen...</p>
+      <div className="space-y-8 p-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-64 rounded-xl" />
+            <Skeleton className="h-4 w-48 rounded-lg" />
+          </div>
+          <Skeleton className="h-12 w-48 rounded-2xl" />
+        </div>
+        <Skeleton className="h-14 w-full max-w-md rounded-[20px]" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <MealCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     );
-  }
 
   return (
     <div className="space-y-8 p-4">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Manage Menu</h1>
-          <p className="text-slate-500 text-sm">You have total {meals.length} items</p>
+          <h1 className="text-3xl font-black text-foreground tracking-tight">Manage Menu</h1>
+          <p className="text-muted-foreground text-sm">You have total {meals.length} items</p>
         </div>
         <Link href="/dashboard/add-menu">
-          <Button className="bg-green-600 hover:bg-green-700 text-white rounded-2xl px-6 py-6 shadow-lg transition-all active:scale-95">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl px-6 py-6 shadow-lg transition-all active:scale-95">
             <Plus className="mr-2 h-5 w-5" /> Add New Meal
           </Button>
         </Link>
@@ -96,26 +108,26 @@ export default function ManageMealsPage() {
 
       {/* Search Bar */}
       <div className="relative group max-w-md">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-600 transition-colors" size={20} />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={20} />
         <input
           type="text"
           placeholder="Search meals..."
-          className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-[20px] outline-none focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all shadow-sm"
+          className="w-full pl-12 pr-4 py-4 bg-background border border-border rounded-[20px] outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
       {filteredMeals.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-[40px] border-2 border-dashed border-slate-100">
-          <Utensils className="h-12 w-12 text-slate-200 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-slate-800">No Meals Found</h3>
-          <p className="text-slate-400 mb-6">Start your menu by adding a meal</p>
+        <div className="text-center py-20 bg-background rounded-[40px] border-2 border-dashed border-border">
+          <Utensils className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+          <h3 className="text-lg font-bold text-foreground">No Meals Found</h3>
+          <p className="text-muted-foreground mb-6">Start your menu by adding a meal</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredMeals.map((meal) => (
-            <div key={meal.id} className="group bg-white rounded-[32px] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden">
+            <div key={meal.id} className="group bg-card rounded-[32px] border border-border shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden">
               
               <div className="relative h-56 w-full overflow-hidden">
                 <Image
@@ -136,12 +148,12 @@ export default function ManageMealsPage() {
 
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-black text-slate-800 text-xl leading-tight truncate flex-1 pr-2">
+                  <h3 className="font-black text-foreground text-xl leading-tight truncate flex-1 pr-2">
                     {meal.title}
                   </h3>
-                  <p className="text-green-600 font-black text-xl tracking-tighter">৳{meal.price}</p>
+                  <p className="text-primary font-black text-xl tracking-tighter">৳{meal.price}</p>
                 </div>
-                <p className="text-slate-500 text-sm line-clamp-2 mb-8 min-h-[40px] leading-relaxed">
+                <p className="text-muted-foreground text-sm line-clamp-2 mb-8 min-h-[40px] leading-relaxed">
                   {meal.description}
                 </p>
 
@@ -151,7 +163,7 @@ export default function ManageMealsPage() {
                   <Link href={`/dashboard/manage-menu/${meal.id}`} className="flex-1">
                     <Button 
                       variant="secondary" 
-                      className="w-full bg-slate-50 hover:bg-green-600 hover:text-white border border-slate-100 rounded-2xl font-black py-6 transition-all"
+                      className="w-full bg-muted hover:bg-primary hover:text-primary-foreground border border-border rounded-2xl font-black py-6 transition-all"
                     >
                       <Edit2 size={18} className="mr-2" /> Edit
                     </Button>

@@ -86,7 +86,7 @@ export default function MealDetailsClient({
     !!meal?.discountPrice &&
     Number(meal.discountPrice) < Number(meal.price);
 
-  const { invalidateCart } = useCart();
+  const { invalidateCart, refetch } = useCart();
   const [adding, setAdding] = useState(false);
 
   const handleAddToCart = async () => {
@@ -95,6 +95,7 @@ export default function MealDetailsClient({
       const res = await addToCart(meal.id);
       if (res.success) {
         toast.success("Added to cart");
+        await refetch();
         await invalidateCart();
       } else {
         toast.error(res.message || "Failed to add to cart");

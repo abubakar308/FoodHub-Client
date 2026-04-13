@@ -39,8 +39,8 @@ export const updateProvider = async (formData: FormData) => {
 
   try {
     const res = await fetch(`${API_URL}/provider/profile`, {
-      method: "PUT",
-      credentials: "include",   // 🔥 THIS sends cookies automatically
+      method: "PATCH",
+      credentials: "include",
       headers: {
         Authorization: `Bearer ${token}`
       },
@@ -75,6 +75,30 @@ export const getProfile = async () => {
     return null;
   }
 }
+
+
+export const getProviderDashboardStats = async () => {
+  try {
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) return null;
+
+    const res = await fetch(`${API_URL}/provider/dashboard-stats`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+    return data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to fetch provider dashboard stats",
+      data: null,
+    };
+  }
+};
 
 
 export interface Meal {

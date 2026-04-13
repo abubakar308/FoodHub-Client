@@ -12,9 +12,11 @@ import {
 } from "@/services/order";
 import { useRouter } from "next/navigation";
 import { Trash2, Plus, Minus, ShoppingBag, Loader2, MapPin } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
   const router = useRouter();
+  const { refetch } = useCart();
 
   const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +57,7 @@ export default function CartPage() {
       );
 
       setCart({ ...cart, items: updatedItems, totalPrice: updatedTotal });
+      await refetch();
     } catch (err: any) {
       toast.error(err.message || "Failed to update quantity");
     } finally {
@@ -73,6 +76,7 @@ export default function CartPage() {
             0
           );
           setCart({ ...cart, items: updatedItems, totalPrice: updatedTotal });
+          refetch();
           return 'Item removed from cart';
         },
         error: 'Could not remove item',
@@ -94,6 +98,7 @@ export default function CartPage() {
       toast.success("Order placed successfully!");
       setShowModal(false);
       setCart(null);
+      await refetch();
       router.push("/dashboard/orders");
       router.refresh();
     } catch (err: any) {
@@ -106,19 +111,19 @@ export default function CartPage() {
   if (loading)
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <Loader2 className="h-10 w-10 text-green-600 animate-spin mb-4" />
-        <p className="text-slate-500 font-medium">Loading your cart items...</p>
+        <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
+        <p className="text-muted-foreground font-medium">Loading your cart items...</p>
       </div>
     );
 
   if (!cart || cart.items.length === 0)
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px] space-y-4">
-        <div className="bg-slate-100 p-6 rounded-full">
-          <ShoppingBag size={48} className="text-slate-300" />
+        <div className="bg-muted p-6 rounded-full">
+          <ShoppingBag size={48} className="text-muted-foreground/30" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-800">Your cart is empty</h2>
-        <p className="text-slate-500">Looks like you haven't added anything yet.</p>
+        <h2 className="text-2xl font-bold text-foreground">Your cart is empty</h2>
+        <p className="text-muted-foreground">Looks like you haven't added anything yet.</p>
         <Button onClick={() => router.push("/")} className="rounded-xl bg-green-600">
           Browse Meals
         </Button>
@@ -128,8 +133,8 @@ export default function CartPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Shopping Cart</h1>
-        <span className="text-slate-500 font-medium">{cart.items.length} Items</span>
+        <h1 className="text-3xl font-black text-foreground tracking-tight">Shopping Cart</h1>
+        <span className="text-muted-foreground font-medium">{cart.items.length} Items</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -138,7 +143,7 @@ export default function CartPage() {
           {cart.items.map((item: any) => (
             <div
               key={item.id}
-              className="flex items-center bg-white border border-slate-100 shadow-sm rounded-3xl p-4 gap-4 transition-hover hover:shadow-md"
+              className="flex items-center bg-card border border-border shadow-sm rounded-3xl p-4 gap-4 transition-hover hover:shadow-md"
             >
               <div className="w-24 h-24 relative rounded-2xl overflow-hidden border flex-shrink-0">
                 <Image
@@ -150,16 +155,16 @@ export default function CartPage() {
               </div>
 
               <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-bold text-slate-800 truncate">
+                <h2 className="text-lg font-bold text-foreground truncate">
                   {item.meal.title}
                 </h2>
-                <p className="text-green-600 font-bold">৳{item.priceAtAddTime}</p>
+                <p className="text-primary font-bold">৳{item.priceAtAddTime}</p>
                 
                 <div className="flex items-center justify-between mt-3">
-                  <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                  <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border">
                     <button
                       disabled={updatingId === item.id || item.quantity <= 1}
-                      className="p-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all disabled:opacity-30"
+                      className="p-1.5 hover:bg-card hover:shadow-sm rounded-lg transition-all disabled:opacity-30"
                       onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                     >
                       <Minus size={16} />
@@ -169,7 +174,7 @@ export default function CartPage() {
                     </span>
                     <button
                       disabled={updatingId === item.id}
-                      className="p-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all disabled:opacity-30"
+                      className="p-1.5 hover:bg-card hover:shadow-sm rounded-lg transition-all disabled:opacity-30"
                       onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                     >
                       <Plus size={16} />
@@ -190,24 +195,24 @@ export default function CartPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-white border border-slate-100 rounded-[32px] p-6 shadow-sm sticky top-24">
+          <div className="bg-card border border-border rounded-[32px] p-6 shadow-sm sticky top-24">
             <h2 className="text-xl font-bold mb-6">Order Summary</h2>
-            <div className="space-y-4 border-b pb-6">
-              <div className="flex justify-between text-slate-500">
+            <div className="space-y-4 border-b border-border pb-6">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
                 <span>৳{cart.totalPrice}</span>
               </div>
-              <div className="flex justify-between text-slate-500">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Delivery Fee</span>
-                <span className="text-green-600 font-medium">Free</span>
+                <span className="text-primary font-medium">Free</span>
               </div>
             </div>
             <div className="flex justify-between items-center py-6">
-              <span className="text-lg font-bold">Total</span>
-              <span className="text-2xl font-black text-green-600">৳{cart.totalPrice}</span>
+              <span className="text-lg font-bold text-foreground">Total</span>
+              <span className="text-2xl font-black text-primary">৳{cart.totalPrice}</span>
             </div>
             <Button 
-              className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-lg font-bold shadow-lg shadow-green-100"
+              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground hover:bg-green-700 text-lg font-bold shadow-lg shadow-green-100 dark:shadow-none"
               onClick={() => setShowModal(true)}
             >
               Checkout Now
@@ -219,21 +224,21 @@ export default function CartPage() {
       {/* Checkout Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-white w-full max-w-md rounded-[32px] p-8 space-y-6 shadow-2xl scale-in-animation">
+          <div className="bg-card w-full max-w-md rounded-[32px] p-8 space-y-6 shadow-2xl scale-in-animation border border-border">
             <div className="flex items-center gap-3">
-              <div className="bg-green-100 p-3 rounded-2xl text-green-600">
+              <div className="bg-primary/10 p-3 rounded-2xl text-primary">
                 <MapPin size={24} />
               </div>
-              <h2 className="text-2xl font-bold">Delivery Info</h2>
+              <h2 className="text-2xl font-bold text-foreground">Delivery Info</h2>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Full Address</label>
+              <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest ml-1">Full Address</label>
               <textarea
                 rows={4}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full border-2 border-slate-100 rounded-2xl p-4 focus:border-green-500 focus:ring-0 outline-none transition-all resize-none font-medium"
+                className="w-full border-2 border-border bg-background rounded-2xl p-4 focus:border-primary focus:ring-0 outline-none transition-all resize-none font-medium"
                 placeholder="House #, Street name, Area..."
               />
             </div>

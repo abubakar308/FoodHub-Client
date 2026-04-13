@@ -20,6 +20,8 @@ export const metadata: Metadata = {
 
 import QueryProvider from "@/providers/QueryProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { CartProvider } from "@/context/CartContext";
+import ThemeProvider from "@/providers/ThemeProvider";
 
 export default function RootLayout({
   children,
@@ -27,15 +29,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>
-          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
-            {children}
-          </GoogleOAuthProvider>
-        </QueryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+              <CartProvider>
+                {children}
+              </CartProvider>
+            </GoogleOAuthProvider>
+          </QueryProvider>
+        </ThemeProvider>
         <Toaster richColors />
       </body>
     </html>

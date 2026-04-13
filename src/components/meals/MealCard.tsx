@@ -36,7 +36,7 @@ export default function MealCard({ meal }: { meal: Meal }) {
     meal.discountPrice &&
     Number(meal.discountPrice) < Number(meal.price);
 
-  const { invalidateCart } = useCart();
+  const { invalidateCart, refetch } = useCart();
   const [adding, setAdding] = useState(false);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -47,6 +47,7 @@ export default function MealCard({ meal }: { meal: Meal }) {
       const res = await addToCart(meal.id);
       if (res.success) {
         toast.success("Added to cart");
+        await refetch();
         await invalidateCart();
       } else {
         toast.error(res.message || "Failed to add to cart");
@@ -83,7 +84,7 @@ export default function MealCard({ meal }: { meal: Meal }) {
             </div>
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
           <div className="absolute bottom-3 left-3">
             {hasDiscount ? (
@@ -91,12 +92,12 @@ export default function MealCard({ meal }: { meal: Meal }) {
                 <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">
                   ৳{meal.discountPrice}
                 </span>
-                <span className="text-xs text-white/80 line-through">
+                <span className="text-xs text-white/90 line-through">
                   ৳{meal.price}
                 </span>
               </div>
             ) : (
-              <span className="rounded-full bg-background/80 px-3 py-1 text-xs font-bold text-foreground">
+              <span className="rounded-full bg-background/90 px-3 py-1 text-xs font-bold text-foreground backdrop-blur-sm">
                 ৳{meal.price}
               </span>
             )}

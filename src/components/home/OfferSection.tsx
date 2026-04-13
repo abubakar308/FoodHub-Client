@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { getAllMeals } from "@/services/meal";
 import { BadgePercent, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { MealCardSkeleton } from "@/components/shared/Skeletons";
 
 type Meal = {
   id: string;
@@ -17,21 +19,45 @@ type Meal = {
 
 export default function OffersSection() {
   const [offers, setOffers] = useState<Meal[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadOffers = async () => {
-      const res = await getAllMeals();
-      const meals = res?.data?.data || [];
+      try {
+        const res = await getAllMeals();
+        const meals = res?.data?.data || [];
 
-      const discounted = meals.filter(
-        (meal: Meal) => meal.discountPrice && Number(meal.discountPrice) < Number(meal.price)
-      );
+        const discounted = meals.filter(
+          (meal: Meal) =>
+            meal.discountPrice && Number(meal.discountPrice) < Number(meal.price)
+        );
 
-      setOffers(discounted.slice(0, 3));
+        setOffers(discounted.slice(0, 3));
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadOffers();
   }, []);
+
+  if (loading) {
+    return (
+      <section className="bg-muted/40 py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center space-y-4">
+            <Skeleton className="h-10 w-64 mx-auto rounded-xl" />
+            <Skeleton className="h-5 w-48 mx-auto rounded-lg" />
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <MealCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (!offers.length) return null;
 

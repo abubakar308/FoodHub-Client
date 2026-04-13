@@ -21,7 +21,7 @@ export default function Home() {
 
 
       {/* Page container */}
-      <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <main className="w-full">
         <Categories />
         <Featured />
         <OffersSection />

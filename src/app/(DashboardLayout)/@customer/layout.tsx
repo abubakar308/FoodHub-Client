@@ -6,7 +6,8 @@ import { useState, useEffect } from "react";
 import { Menu, X, ClipboardList, User, LayoutDashboard, ShoppingCart, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { getCart } from "@/services/order";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { useCart } from "@/context/CartContext";
 
 const navItems = [
   {
@@ -33,25 +34,7 @@ export default function CustomerDashboardLayout({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getCart();
-
-      if (response.items) {
-        // Calculate sum of all quantities
-        const total = response.items.reduce(
-          (acc: number, item: any) => acc + item.quantity,
-          0
-        );
-        setCartCount(total);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { count: cartCount } = useCart();
 
 
   return (
@@ -67,8 +50,8 @@ export default function CustomerDashboardLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static z-50 top-0 left-0 h-full w-72 bg-white border-r border-slate-200 p-6 transform transition-transform duration-300 ease-in-out flex flex-col",
-          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          "fixed top-0 left-0 z-50 flex h-full w-72 transform flex-col border-r border-slate-200 bg-white p-6 transition-transform duration-300 ease-in-out dark:border-slate-800 dark:bg-slate-900 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+          open ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo */}
@@ -133,6 +116,7 @@ export default function CustomerDashboardLayout({
           </div>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             {/* Professional Cart Button */}
             <Link href="/dashboard/cart">
               <Button variant="outline" className="relative gap-2 border-slate-200 hover:bg-slate-50 rounded-full px-4">
