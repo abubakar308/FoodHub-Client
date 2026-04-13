@@ -46,15 +46,23 @@ export default function EditMealPage() {
 
     setLoading(true);
     const form = e.currentTarget;
-    const formData = new FormData(form);
+    const payload = new FormData();
+
+    const titleEl = form.elements.namedItem("title") as HTMLInputElement;
+    const priceEl = form.elements.namedItem("price") as HTMLInputElement;
+    const descEl = form.elements.namedItem("description") as HTMLTextAreaElement;
+    const fileEl = form.elements.namedItem("imageUrl") as HTMLInputElement;
+
+    if (titleEl) payload.append("title", titleEl.value);
+    if (priceEl) payload.append("price", priceEl.value);
+    if (descEl) payload.append("description", descEl.value);
+    
+    if (fileEl && fileEl.files && fileEl.files.length > 0) {
+      payload.append("imageUrl", fileEl.files[0]);
+    }
 
     try {
-      await updateMeal(mealId as string, {
-        title: (formData.get("title") as string) || "",
-        description: (formData.get("description") as string) || "",
-        price: Number(formData.get("price")) || 0,
-        imageUrl: (formData.get("imageUrl") as string) || ""
-      });
+      await updateMeal(mealId as string, payload);
 
       toast.success("Meal updated successfully 🎉");
       router.push("/meals");
@@ -105,13 +113,18 @@ export default function EditMealPage() {
 
           {/* Image URL */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Image URL</label>
-            <Input
+            <label className="text-sm font-medium">Update Meal Image</label>
+            <input
               name="imageUrl"
-              type="text"
-              defaultValue={meal.imageUrl}
-              required
+              type="file"
+              accept="image/*"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
+            {meal.imageUrl && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Leave empty to preserve the current image.
+              </p>
+            )}
           </div>
 
           {/* Buttons */}

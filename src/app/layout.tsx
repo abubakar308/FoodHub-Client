@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Food Hub",
-  description: "food ordering app",
+  title: "Quickplatter",
+  description: "Order delicious meals from top restaurants near you",
 };
 
 import QueryProvider from "@/providers/QueryProvider";

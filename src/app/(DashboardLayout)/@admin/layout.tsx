@@ -58,7 +58,7 @@ export default function AdminLayout({
             </div>
             <div>
               <h2 className="text-2xl font-extrabold text-white">
-                FoodHub <span className="text-green-500">Admin</span>
+                Quickplatter <span className="text-green-500">Admin</span>
               </h2>
             </div>
           </Link>

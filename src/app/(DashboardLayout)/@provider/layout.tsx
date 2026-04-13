@@ -67,7 +67,7 @@ export default function ProviderLayout({
         {/* Logo */}
         <div className="flex items-center justify-between mb-10 px-2">
           <Link href="/" className="flex flex-col">
-            <span className="text-2xl font-bold text-green-600 tracking-tight">FoodHub</span>
+            <span className="text-2xl font-bold text-green-600 tracking-tight">Quickplatter</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Provider Panel</span>
           </Link>
 

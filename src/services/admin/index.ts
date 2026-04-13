@@ -67,12 +67,15 @@ export const getAdminDashboardStats = async () => {
     const result = await res.json();
 
     if (!res.ok) {
+      if (res.status === 401 || res.status === 403) return null;
       throw new Error(result?.message || "Failed to fetch dashboard stats");
     }
 
     return result;
-  } catch (error) {
-    console.error("getAdminDashboardStats error:", error);
+  } catch (error: any) {
+    if (error?.message !== "Forbidden") {
+      console.error("getAdminDashboardStats error:", error);
+    }
     return null;
   }
 };
@@ -91,11 +94,16 @@ export async function getUsers() {
       cache: "no-store",
     });
 
-    if (!res.ok) throw new Error("Failed to fetch users");
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) return [];
+      throw new Error("Failed to fetch users");
+    }
     const data = await res.json();
     return data.data;
-  } catch (error) {
-    console.error("Get users error:", error);
+  } catch (error: any) {
+    if (error?.message !== "Forbidden") {
+      console.error("Get users error:", error);
+    }
     return [];
   }
 }
@@ -141,11 +149,16 @@ export async function getAllOrders() {
       cache: "no-store",
     });
 
-    if (!res.ok) throw new Error("Failed to fetch orders");
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) return [];
+      throw new Error("Failed to fetch orders");
+    }
     const data = await res.json();
     return Array.isArray(data.data) ? data.data : [];
-  } catch (error) {
-    console.error("Get all orders error:", error);
+  } catch (error: any) {
+    if (error?.message !== "Forbidden") {
+      console.error("Get all orders error:", error);
+    }
     return [];
   }
 }

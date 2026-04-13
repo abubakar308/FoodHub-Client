@@ -74,8 +74,8 @@ export default function CustomerDashboardLayout({
         {/* Logo */}
         <div className="flex items-center justify-between mb-10 px-2">
           <Link href="/" className="text-2xl font-bold text-green-600 flex items-center gap-2">
-            <span className="bg-green-600 text-white p-1 rounded-lg">FH</span>
-            FoodHub
+            <span className="bg-green-600 text-white p-1 rounded-lg">QP</span>
+            Quickplatter
           </Link>
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(false)}>
             <X className="h-5 w-5" />

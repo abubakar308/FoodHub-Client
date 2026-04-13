@@ -4,13 +4,7 @@ import { cookies } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-export const createMeal = async (meal: {
-  title: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  categoryId: string;
-}) => {
+export const createMeal = async (formData: FormData) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
@@ -19,10 +13,9 @@ export const createMeal = async (meal: {
   const res = await fetch(`${API_URL}/meals`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(meal),
+    body: formData,
   });
 
   if (!res.ok) {
@@ -35,12 +28,7 @@ export const createMeal = async (meal: {
 };
 
 
-export const updateMeal = async (mealId: string, meal: {
-  title: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-}) => {
+export const updateMeal = async (mealId: string, formData: FormData) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) throw new Error("Unauthorized");
@@ -48,10 +36,9 @@ export const updateMeal = async (mealId: string, meal: {
   const res = await fetch(`${API_URL}/meals/${mealId}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(meal),
+    body: formData,
   });
 
   if (!res.ok) {

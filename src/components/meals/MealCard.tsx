@@ -9,20 +9,26 @@ import {
   ArrowUpRight,
   Star,
   Clock,
+  ShoppingCart,
+  Loader2,
 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useCart } from "@/context/CartContext";
+import { addToCart } from "@/services/order";
 
 type Meal = {
   id: string;
   title: string;
-  imageUrl?: string;
-  description?: string;
+  imageUrl?: string | null;
+  description?: string | null;
   shortDescription?: string | null;
   price: number | string;
   discountPrice?: number | string | null;
-  preparationTime?: number;
-  averageRating?: number;
-  category?: { name: string };
-  provider?: { restaurantName: string };
+  preparationTime?: number | null;
+  averageRating?: number | null;
+  category?: { name?: string | null } | null;
+  provider?: { restaurantName?: string | null } | null;
 };
 
 export default function MealCard({ meal }: { meal: Meal }) {
@@ -30,10 +36,34 @@ export default function MealCard({ meal }: { meal: Meal }) {
     meal.discountPrice &&
     Number(meal.discountPrice) < Number(meal.price);
 
+  const { invalidateCart } = useCart();
+  const [adding, setAdding] = useState(false);
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      setAdding(true);
+      const res = await addToCart(meal.id);
+      if (res.success) {
+        toast.success("Added to cart");
+        await invalidateCart();
+      } else {
+        toast.error(res.message || "Failed to add to cart");
+      }
+    } catch (err) {
+      toast.error("Failed to add to cart");
+    } finally {
+      setAdding(false);
+    }
+  };
+
   return (
-    <Link href={`/meals/${meal.id}`} className="group block h-full">
+    <div className="group block h-full relative">
       <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
-        <div className="absolute top-4 right-4 z-20 opacity-0 transition group-hover:opacity-100">
+        <Link href={`/meals/${meal.id}`} className="absolute inset-0 z-10" aria-label={`View ${meal.title}`} />
+        
+        <div className="absolute top-4 right-4 z-20 opacity-0 transition group-hover:opacity-100 pointer-events-none">
           <div className="rounded-full bg-background/80 p-2 text-primary shadow-md backdrop-blur">
             <ArrowUpRight size={18} />
           </div>
@@ -115,13 +145,21 @@ export default function MealCard({ meal }: { meal: Meal }) {
             ) : null}
           </div>
 
-          <div className="mt-5">
-            <Button asChild className="w-full rounded-full font-semibold gap-2">
-              <span>View Details</span>
+          <div className="mt-5 grid grid-cols-2 gap-2 relative z-20">
+            <Button asChild className="w-full rounded-full font-semibold" variant="outline">
+              <Link href={`/meals/${meal.id}`}>Details</Link>
+            </Button>
+            <Button 
+               onClick={handleAddToCart}
+               disabled={adding}
+               className="w-full rounded-full font-semibold gap-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              {adding ? <Loader2 size={16} className="animate-spin" /> : <ShoppingCart size={16} />}
+              <span>Add</span>
             </Button>
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

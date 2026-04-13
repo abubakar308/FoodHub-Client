@@ -27,7 +27,15 @@ export default function CreateMealPage() {
   const [price, setPrice] = useState<number | "">("");
   const [categoryId, setCategoryId] = useState("");
   const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
+
+  useEffect(() => {
+    if (!imageFile) return;
+    const url = URL.createObjectURL(imageFile);
+    setImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -43,20 +51,21 @@ export default function CreateMealPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!title || !price || !categoryId || !description || !imageUrl) {
-      toast.error("Please fill all fields");
+    if (!title || !price || !categoryId || !description || !imageFile) {
+      toast.error("Please fill all fields, including an image");
       return;
     }
 
     setLoading(true);
     try {
-      await createMeal({
-        title,
-        description,
-        price: Number(price),
-        imageUrl,
-        categoryId,
-      });
+      const payload = new FormData();
+      payload.append("title", title.trim());
+      payload.append("price", price.toString());
+      payload.append("categoryId", categoryId);
+      payload.append("description", description.trim());
+      payload.append("imageUrl", imageFile);
+
+      await createMeal(payload);
 
       toast.success("Meal created successfully 🎉");
       router.push("/dashboard/manage-menu"); 
@@ -150,13 +159,13 @@ export default function CreateMealPage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <ImageIcon size={16} className="text-green-600" /> Image URL
+                  <ImageIcon size={16} className="text-green-600" /> Meal Image
                 </label>
-                <Input
-                  className="rounded-xl border-slate-200 py-6 focus-visible:ring-green-500"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/your-meal"
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                  className="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-500"
                   required
                 />
               </div>
@@ -184,13 +193,12 @@ export default function CreateMealPage() {
             <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Live Preview</h2>
             <div className="rounded-[24px] border border-slate-100 bg-white overflow-hidden shadow-sm">
               <div className="relative h-48 bg-slate-100 flex items-center justify-center">
-                {imageUrl ? (
+                {imagePreview ? (
                   <Image 
-                    src={imageUrl} 
+                    src={imagePreview} 
                     alt="Preview" 
                     fill 
                     className="object-cover"
-                    onError={() => toast.error("Invalid Image URL")}
                   />
                 ) : (
                   <div className="flex flex-col items-center text-slate-400">

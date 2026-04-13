@@ -88,7 +88,7 @@ const SignupPage = () => {
             Create Account 🚀
           </h1>
           <p className="text-slate-500 font-medium mt-2">
-            Join FoodHub and start eating fresh
+            Join Quickplatter and start eating fresh
           </p>
         </div>
 

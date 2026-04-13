@@ -18,13 +18,13 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-// স্ট্যাটাস ফ্লো ডিফাইন করা হয়েছে যেন উল্টাপাল্টা আপডেট না হয়
+
 const NEXT_STATUS_MAP: Record<string, string | null> = {
   PLACED: "PREPARING",
   PREPARING: "READY",
   READY: "DELIVERED",
-  DELIVERED: null, // শেষ ধাপ
-  CANCELLED: null, // বন্ধ
+  DELIVERED: null,
+  CANCELLED: null,
 };
 
 export default function ProviderOrdersPage() {
@@ -35,7 +35,8 @@ export default function ProviderOrdersPage() {
   const loadOrders = async () => {
     try {
       const data = await getOrders();
-      setOrders(data);
+
+      setOrders(data || []);
     } catch (err) {
       toast.error("Failed to load orders");
     } finally {
@@ -88,17 +89,17 @@ export default function ProviderOrdersPage() {
           </p>
         </div>
         <div className="bg-slate-900 text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-xl shadow-slate-200">
-          {orders.length} TOTAL ORDERS
+          {orders?.length || 0} TOTAL ORDERS
         </div>
       </header>
 
       <div className="grid gap-8">
-        {orders.length === 0 ? (
+        {orders?.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-[40px] border border-dashed">
             <Utensils className="mx-auto text-slate-200 mb-4" size={60} />
             <p className="text-slate-400 font-medium">No orders in the queue right now.</p>
           </div>
-        ) : orders.map((order) => {
+        ) : orders?.map((order) => {
           const nextStep = NEXT_STATUS_MAP[order.status];
           const isProcessing = updatingId === order.id;
 

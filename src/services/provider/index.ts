@@ -165,7 +165,7 @@ export async function getOrders() {
     const token = cookieStore.get("token")?.value;
     if (!token) return [];
 
-    const res = await fetch(`${API_URL}/providers/orders`, {
+    const res = await fetch(`${API_URL}/provider/orders`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });

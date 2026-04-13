@@ -47,7 +47,7 @@ export default function LoginForm({ className }: { className?: string }) {
       const data = await loginUser(payload);
 
       if (data.success) {
-        toast.success("Welcome back to FoodHub!");
+        toast.success("Welcome back to Quickplatter!");
         router.push("/");
         router.refresh();
       } else {
@@ -110,7 +110,7 @@ export default function LoginForm({ className }: { className?: string }) {
             Welcome Back 👋
           </h1>
           <p className="text-slate-500 font-medium mt-2">
-            Log in to continue your FoodHub journey
+            Log in to continue your Quickplatter journey
           </p>
         </div>
 
@@ -220,7 +220,7 @@ export default function LoginForm({ className }: { className?: string }) {
         </div>
 
         <p className="mt-8 text-center text-sm font-medium text-slate-500">
-          New to FoodHub?{" "}
+          New to Quickplatter?{" "}
           <Link
             href="/register"
             className="font-black text-green-600 hover:text-green-700 transition-colors underline-offset-4 hover:underline"

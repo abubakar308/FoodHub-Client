@@ -2,7 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+
+export interface CustomJwtPayload extends JwtPayload {
+  role?: string;
+  email?: string;
+  userId?: string;
+}
 
 interface RegisterPayload {
   name: string;
@@ -128,14 +134,14 @@ export const googleLoginUser = async (
   }
 };
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<CustomJwtPayload | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
   if (!token) return null;
 
   try {
-    return jwtDecode(token);
+    return jwtDecode<CustomJwtPayload>(token);
   } catch {
     return null;
   }
