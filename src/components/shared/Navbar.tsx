@@ -106,7 +106,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+    <header className="sticky top-0 z-[100] border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-lg shadow-sm ring-1 ring-primary/10 transition-all duration-300 group-hover:scale-105 group-hover:bg-primary/15">

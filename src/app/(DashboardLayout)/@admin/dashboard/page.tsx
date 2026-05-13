@@ -205,10 +205,10 @@ export default async function AdminDashboardPage() {
                           {order.status}
                         </span>
                       </td>
-                      <td className="px-3 py-4 text-slate-600 dark:text-slate-300">
+                      <td className="px-3 py-4 text-muted-foreground">
                         {order.address}
                       </td>
-                      <td className="px-3 py-4 text-slate-600 dark:text-slate-300">
+                      <td className="px-3 py-4 text-muted-foreground">
                         {formatDate(order.createdAt)}
                       </td>
                     </tr>

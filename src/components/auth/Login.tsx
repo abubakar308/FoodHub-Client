@@ -114,6 +114,51 @@ export default function LoginForm({ className }: { className?: string }) {
           </p>
         </div>
 
+        {/* Demo Credentials Section */}
+        <div className="mt-6 p-4 rounded-xl border border-border text-sm space-y-3">
+          <p className="font-bold text-foreground text-center">Demo Credentials</p>
+
+          <div className="flex flex-col gap-2">
+
+            {/* Admin */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("admin@gmail.com");
+                setPassword("Admin@12");
+              }}
+              className="w-full text-left p-2 rounded-lg border hover:bg-green-50 dark:hover:bg-green-900/20 transition"
+            >
+              <p className="font-semibold">👨‍💼 Admin</p>
+            </button>
+
+            {/* Provider */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("provider@gmail.com");
+                setPassword("Provider12");
+              }}
+              className="w-full text-left p-2 rounded-lg border hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+            >
+              <p className="font-semibold">🏪 Provider</p>
+            </button>
+
+            {/* Customer */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("customer@gmail.com");
+                setPassword("123456");
+              }}
+              className="w-full text-left p-2 rounded-lg border hover:bg-orange-50 dark:hover:bg-orange-900/20 transition"
+            >
+              <p className="font-semibold">👤 Customer</p>
+            </button>
+
+          </div>
+        </div>
+
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-1.5">
             <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">

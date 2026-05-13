@@ -11,7 +11,10 @@ import {
   MapPin,
   Clock3,
   ShieldCheck,
+  Loader2,
 } from "lucide-react";
+import { getCategories } from "@/services/categories";
+import { getProviders } from "@/services/provider";
 
 const images = [
   "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600",
@@ -19,16 +22,37 @@ const images = [
   "https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=1600",
 ];
 
-const stats = [
-  { label: "Categories", value: "50+" },
-  { label: "Providers", value: "120+" },
-  { label: "Avg Delivery", value: "15m" },
-];
-
 const Hero = () => {
   const [index, setIndex] = useState(0);
+  const [counts, setCounts] = useState({ categories: 0, providers: 0 });
+  const [loading, setLoading] = useState(true);
+
+  const stats = [
+    { label: "Categories", value: loading ? "..." : `${counts.categories}+` },
+    { label: "Providers", value: loading ? "..." : `${counts.providers}+` },
+    { label: "Avg Delivery", value: "15m" },
+  ];
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [categories, providersRes] = await Promise.all([
+          getCategories(),
+          getProviders(),
+        ]);
+        setCounts({
+          categories: categories?.length || 0,
+          providers: Array.isArray(providersRes?.data) ? providersRes.data.length : 0,
+        });
+      } catch (error) {
+        console.error("Failed to fetch heroic stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
     }, 5000);

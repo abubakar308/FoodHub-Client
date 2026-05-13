@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
-import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 
 const footerLinks = {
   platform: [
@@ -25,18 +25,18 @@ const footerLinks = {
 const socialLinks = [
   {
     name: "Facebook",
-    href: "https://facebook.com",
+    href: "https://www.facebook.com/mdabubakar308",
     icon: <FaFacebookF size={16} />,
   },
   {
     name: "Instagram",
-    href: "https://instagram.com",
+    href: "https://instagram.com/md.abubakar.308",
     icon: <FaInstagram size={16} />,
   },
   {
-    name: "Twitter",
-    href: "https://twitter.com",
-    icon: <FaTwitter size={16} />,
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/in/abubakar308",
+    icon: <FaLinkedin size={16} />,
   },
 ];
 
@@ -89,24 +89,24 @@ export default function Footer() {
               Contact
             </h4>
 
-            <ul className="space-y-4 text-sm text-muted-foreground">
+            {/* <ul className="space-y-4 text-sm text-muted-foreground">
               <li>
                 <a
                   href="tel:+8801234567890"
                   className="group flex items-center gap-3 transition-colors hover:text-primary"
                 >
                   <Phone className="h-4 w-4 text-primary" />
-                  <span>+880 1234 567 890</span>
+                  <span>+880 1773398308</span>
                 </a>
               </li>
 
               <li>
                 <a
-                  href="mailto:support@quickplatter.com"
+                  href="mailto:mdabubakar.dev@gmail.com"
                   className="group flex items-center gap-3 transition-colors hover:text-primary"
                 >
                   <Mail className="h-4 w-4 text-primary" />
-                  <span>support@quickplatter.com</span>
+                  <span>mdabubakar.dev@gmail.com</span>
                 </a>
               </li>
 
@@ -114,7 +114,7 @@ export default function Footer() {
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <span>Dhaka, Bangladesh</span>
               </li>
-            </ul>
+            </ul> */}
 
             <div className="rounded-2xl border border-border bg-card p-4">
               <p className="text-sm font-semibold text-card-foreground">

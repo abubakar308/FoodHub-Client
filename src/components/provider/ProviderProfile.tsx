@@ -73,7 +73,7 @@ export default function ProviderProfileManager() {
         setPageLoading(true);
 
         const res = await getProfile();
-        const data = res?.data ?? res?.data?.data ?? null;
+        const data = res?.data?.data ?? res?.data ?? null;
 
         if (data?.id) {
           setProvider(data);
@@ -168,7 +168,7 @@ export default function ProviderProfileManager() {
         ? await updateProvider(payload)
         : await createProvider(payload);
 
-      const updated = res?.data ?? res?.data?.data ?? null;
+      const updated = res?.data?.data ?? res?.data ?? null;
 
       if (!updated?.id) {
         toast.error(
@@ -235,7 +235,7 @@ export default function ProviderProfileManager() {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-slate-400">
+              <div className="flex h-full items-center justify-center text-muted-foreground/40">
                 <ImageIcon className="h-8 w-8" />
               </div>
             )}
@@ -251,7 +251,7 @@ export default function ProviderProfileManager() {
                   className="object-cover"
                 />
               ) : (
-                <div className="flex h-full items-center justify-center text-slate-400">
+                <div className="flex h-full items-center justify-center text-muted-foreground/40">
                   <Store className="h-8 w-8" />
                 </div>
               )}
@@ -259,75 +259,75 @@ export default function ProviderProfileManager() {
           </div>
 
           <div className="mt-4 text-center">
-            <h2 className="text-xl font-extrabold text-foreground">
+            <h2 className="text-xl font-black text-foreground">
               {provider?.restaurantName || formData.restaurantName || "Create Provider Profile"}
             </h2>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-sm text-muted-foreground">
               {provider?.cuisineType || formData.cuisineType || "Restaurant information and branding"}
             </p>
 
             <div className="mt-3">{approvalBadge}</div>
           </div>
 
-          <div className="mt-6 space-y-4 rounded-2xl bg-muted/40 p-4">
+          <div className="mt-6 space-y-4 rounded-2xl bg-muted/30 p-4 border border-border/50">
             <div className="flex items-start gap-3">
-              <MapPin className="mt-0.5 h-4 w-4 text-slate-400" />
+              <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground/60" />
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground/50">
                   Address
                 </p>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-medium text-foreground/80">
                   {provider?.address || formData.address || "Not added yet"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Phone className="mt-0.5 h-4 w-4 text-slate-400" />
+              <Phone className="mt-0.5 h-4 w-4 text-muted-foreground/60" />
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground/50">
                   Phone
                 </p>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-medium text-foreground/80">
                   {provider?.phone || formData.phone || "Not added yet"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Clock3 className="mt-0.5 h-4 w-4 text-slate-400" />
+              <Clock3 className="mt-0.5 h-4 w-4 text-muted-foreground/60" />
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground/50">
                   Hours
                 </p>
-                <p className="text-sm font-medium text-foreground">
-                  {(provider?.openingTime || formData.openingTime || "N/A")} - {(provider?.closingTime || formData.closingTime || "N/A")}
+                <p className="text-sm font-medium text-foreground/80">
+                  {formData.openingTime || "N/A"} - {formData.closingTime || "N/A"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Truck className="mt-0.5 h-4 w-4 text-slate-400" />
+              <Truck className="mt-0.5 h-4 w-4 text-muted-foreground/60" />
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground/50">
                   Delivery Area
                 </p>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-medium text-foreground/80">
                   {provider?.deliveryArea || formData.deliveryArea || "Not added yet"}
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="rounded-xl border border-border bg-card p-3 text-center">
-                <p className="text-xs text-slate-400">Avg Rating</p>
-                <p className="mt-1 text-lg font-bold text-foreground">
+              <div className="rounded-xl border border-border bg-background p-3 text-center">
+                <p className="text-[10px] font-bold uppercase text-muted-foreground/60">Avg Rating</p>
+                <p className="mt-1 text-lg font-black text-foreground">
                   {provider?.averageRating ?? 0}
                 </p>
               </div>
-              <div className="rounded-xl border border-border bg-card p-3 text-center">
-                <p className="text-xs text-slate-400">Reviews</p>
-                <p className="mt-1 text-lg font-bold text-foreground">
+              <div className="rounded-xl border border-border bg-background p-3 text-center">
+                <p className="text-[10px] font-bold uppercase text-muted-foreground/60">Reviews</p>
+                <p className="mt-1 text-lg font-black text-foreground">
                   {provider?.totalReviews ?? 0}
                 </p>
               </div>
@@ -335,39 +335,39 @@ export default function ProviderProfileManager() {
           </div>
         </aside>
 
-        <div className="rounded-3xl border border-border bg-card p-5 shadow-sm md:p-7">
-          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="rounded-3xl border border-border bg-card p-5 shadow-sm md:p-8">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-extrabold text-foreground md:text-3xl">
+              <h1 className="text-2xl font-black text-foreground md:text-3xl">
                 {isEditMode ? "Update Provider Profile" : "Create Provider Profile"}
               </h1>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Add your restaurant details, branding, timing, and delivery information.
               </p>
             </div>
 
             {isEditMode && (
-              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
+              <div className="inline-flex items-center gap-2 rounded-2xl bg-primary/10 px-4 py-2 text-sm font-bold text-primary border border-primary/20">
                 <Pencil className="h-4 w-4" />
-                Edit Mode
+                Edit Profile
               </div>
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="grid gap-5 md:grid-cols-2">
+          <form onSubmit={handleSubmit} className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-bold text-foreground/80">
                 Restaurant Name
               </label>
               <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                 <input
                   type="text"
                   name="restaurantName"
                   value={formData.restaurantName}
                   onChange={handleChange}
                   placeholder="Enter restaurant name"
-                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary transition-all shadow-sm"
                   required
                 />
               </div>
@@ -378,14 +378,14 @@ export default function ProviderProfileManager() {
                 Phone
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                 <input
                   type="text"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="Enter phone number"
-                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary transition-all shadow-sm"
                   required
                 />
               </div>
@@ -396,14 +396,14 @@ export default function ProviderProfileManager() {
                 Address
               </label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-4 h-4 w-4 text-slate-400" />
+                <MapPin className="absolute left-3 top-4 h-4 w-4 text-muted-foreground/60" />
                 <input
                   type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                   placeholder="Enter restaurant address"
-                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary transition-all shadow-sm"
                   required
                 />
               </div>
@@ -414,14 +414,14 @@ export default function ProviderProfileManager() {
                 Cuisine Type
               </label>
               <div className="relative">
-                <UtensilsCrossed className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <UtensilsCrossed className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                 <input
                   type="text"
                   name="cuisineType"
                   value={formData.cuisineType}
                   onChange={handleChange}
                   placeholder="Bangladeshi, Fast Food, Thai..."
-                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -431,14 +431,14 @@ export default function ProviderProfileManager() {
                 Delivery Area
               </label>
               <div className="relative">
-                <Truck className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Truck className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
                 <input
                   type="text"
                   name="deliveryArea"
                   value={formData.deliveryArea}
                   onChange={handleChange}
                   placeholder="Dhanmondi, Mirpur, Uttara..."
-                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-border bg-background pl-10 pr-4 text-sm outline-none focus:border-primary transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -453,7 +453,7 @@ export default function ProviderProfileManager() {
                 value={formData.openingTime}
                 onChange={handleChange}
                 placeholder="10:00 AM"
-                className="h-12 w-full rounded-2xl border border-border bg-background px-4 text-sm outline-none focus:border-primary"
+                className="h-12 w-full rounded-2xl border border-border bg-background px-4 text-sm outline-none focus:border-primary transition-all shadow-sm"
               />
             </div>
 
@@ -467,7 +467,7 @@ export default function ProviderProfileManager() {
                 value={formData.closingTime}
                 onChange={handleChange}
                 placeholder="11:00 PM"
-                className="h-12 w-full rounded-2xl border border-border bg-background px-4 text-sm outline-none focus:border-primary"
+                className="h-12 w-full rounded-2xl border border-border bg-background px-4 text-sm outline-none focus:border-primary transition-all shadow-sm"
               />
             </div>
 
@@ -476,39 +476,39 @@ export default function ProviderProfileManager() {
                 Description
               </label>
               <div className="relative">
-                <FileText className="absolute left-3 top-4 h-4 w-4 text-slate-400" />
+                <FileText className="absolute left-3 top-4 h-4 w-4 text-muted-foreground/60" />
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   rows={5}
                   placeholder="Write a short description about your restaurant..."
-                  className="w-full rounded-2xl border border-border bg-background py-3 pl-10 pr-4 text-sm outline-none focus:border-primary"
+                  className="w-full rounded-2xl border border-border bg-background py-3 pl-10 pr-4 text-sm outline-none focus:border-primary transition-all shadow-sm"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+              <label className="text-sm font-bold text-foreground/80">
                 Restaurant Logo
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
-                className="block w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm"
+                className="block w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-muted-foreground file:mr-4 file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:py-1.5 file:text-xs file:font-black file:text-primary hover:file:bg-primary/20 transition-all cursor-pointer"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
+              <label className="text-sm font-bold text-foreground/80">
                 Banner Image
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setBannerFile(e.target.files?.[0] || null)}
-                className="block w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm"
+                className="block w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-muted-foreground file:mr-4 file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:py-1.5 file:text-xs file:font-black file:text-primary hover:file:bg-primary/20 transition-all cursor-pointer"
               />
             </div>
 
@@ -516,7 +516,7 @@ export default function ProviderProfileManager() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-4 text-sm font-black text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70 shadow-lg shadow-primary/20"
               >
                 {submitting ? (
                   <>

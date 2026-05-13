@@ -38,11 +38,11 @@ export default function CustomerDashboardLayout({
 
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex">
+    <div className="min-h-screen bg-secondary/30 flex">
       {/* Mobile overlay */}
       {open && (
         <div
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
@@ -50,17 +50,21 @@ export default function CustomerDashboardLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 flex h-full w-72 transform flex-col border-r border-slate-200 bg-white p-6 transition-transform duration-300 ease-in-out dark:border-slate-800 dark:bg-slate-900 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex h-full w-72 transform flex-col border-r border-border bg-background p-6 transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 shadow-sm",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between mb-10 px-2">
-          <Link href="/" className="text-2xl font-bold text-green-600 flex items-center gap-2">
-            <span className="bg-green-600 text-white p-1 rounded-lg">QP</span>
-            Quickplatter
+        <div className="flex items-center justify-between mb-10 px-2 font-bold">
+          <Link href="/" className="flex items-center gap-3">
+             <div className="rounded-2xl bg-primary shadow-lg shadow-primary/20 p-2.5">
+               <span className="text-primary-foreground font-black text-lg">QP</span>
+             </div>
+             <span className="text-xl font-black tracking-tight text-foreground">
+               Quickplatter
+             </span>
           </Link>
-          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(false)}>
+          <Button variant="ghost" size="icon" className="lg:hidden text-muted-foreground" onClick={() => setOpen(false)}>
             <X className="h-5 w-5" />
           </Button>
         </div>
@@ -68,7 +72,6 @@ export default function CustomerDashboardLayout({
         {/* Navigation */}
         <nav className="flex flex-col gap-1.5 flex-1">
           {navItems.map((item) => {
-            // ✅ FIX: Exact matching logic to prevent double activation
             const active = pathname === item.href;
             const Icon = item.icon;
 
@@ -78,13 +81,13 @@ export default function CustomerDashboardLayout({
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200",
+                  "flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition-all duration-200",
                   active
-                    ? "bg-green-600 text-white shadow-lg shadow-green-200 translate-x-1"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 translate-x-1"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
-                <Icon size={20} className={cn(active ? "text-white" : "text-slate-500")} />
+                <Icon size={20} />
                 {item.name}
               </Link>
             );
@@ -92,10 +95,10 @@ export default function CustomerDashboardLayout({
         </nav>
 
         {/* Bottom links */}
-        <div className="border-t border-slate-100 pt-6">
+        <div className="border-t border-border pt-6 space-y-2">
           <Link
             href="/"
-            className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <ArrowLeft size={18} /> Back to Home
           </Link>
@@ -103,14 +106,14 @@ export default function CustomerDashboardLayout({
       </aside>
 
       {/* Main section */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 transition-colors duration-300">
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>
+            <Button variant="ghost" size="icon" className="lg:hidden border border-border" onClick={() => setOpen(true)}>
               <Menu className="h-6 w-6" />
             </Button>
-            <h2 className="text-xl font-semibold text-slate-800 hidden sm:block">
+            <h2 className="text-xl font-black tracking-tight text-foreground hidden sm:block">
               {navItems.find(item => item.href === pathname)?.name || "Dashboard"}
             </h2>
           </div>
@@ -119,25 +122,25 @@ export default function CustomerDashboardLayout({
             <ThemeToggle />
             {/* Professional Cart Button */}
             <Link href="/dashboard/cart">
-              <Button variant="outline" className="relative gap-2 border-slate-200 hover:bg-slate-50 rounded-full px-4">
-                <ShoppingCart className="h-4 w-4 text-slate-600" />
-                <span className="hidden sm:inline text-slate-700">Cart</span>
+              <Button variant="outline" className="relative gap-2 border-border hover:bg-muted rounded-full px-4 text-foreground">
+                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                <span className="hidden sm:inline">Cart</span>
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-white">
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-background">
                     {cartCount}
                   </span>
                 )}
               </Button>
             </Link>
 
-            <div className="h-8 w-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center overflow-hidden">
-              <User className="h-5 w-5 text-slate-500" />
+            <div className="h-10 w-10 rounded-2xl border-2 border-primary/20 bg-primary/10 flex items-center justify-center overflow-hidden transition-all hover:scale-105">
+              <User className="h-5 w-5 text-primary" />
             </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="p-4 md:p-8 max-w-7xl mx-auto w-full">
+        <main className="p-4 md:p-6 lg:p-8 w-full max-w-7xl mx-auto">
           {children}
         </main>
       </div>

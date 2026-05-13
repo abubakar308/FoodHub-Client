@@ -12,6 +12,7 @@ import {
   PlusCircle,
   ArrowLeft,
   Store,
+  Wand2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Manage Menu", href: "/dashboard/manage-menu", icon: UtensilsCrossed },
   { name: "Add New Meal", href: "/dashboard/add-menu", icon: PlusCircle },
+  { name: "AI Content Creator", href: "/dashboard/ai-content", icon: Wand2 },
   { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag },
   { name: "My Profile", href: "/dashboard/provider-profile", icon: Store },
 ];

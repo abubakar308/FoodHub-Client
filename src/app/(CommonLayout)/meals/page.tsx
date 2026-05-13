@@ -1,5 +1,6 @@
-
 import MealCard from "@/components/meals/MealCard";
+import MealSearchSuggestions from "@/components/meals/MealSearchSuggestions";
+import MealSort from "@/components/meals/MealSort";
 import { getCategories } from "@/services/categories";
 import { getAllMeals } from "@/services/meal";
 import Link from "next/link";
@@ -77,79 +78,12 @@ export default async function Page({ searchParams }: Props) {
 
       <div className="mb-8 flex flex-col md:flex-row gap-4 justify-between">
         {/* Search */}
-        <form method="GET" className="w-full md:max-w-md flex gap-2">
-          <input
-            name="searchTerm"
-            defaultValue={params.searchTerm}
-            placeholder="Search meals..."
-            className="w-full rounded-full border border-border bg-background px-5 py-3 text-sm outline-none focus:ring-2 focus:ring-primary"
-          />
+        <MealSearchSuggestions 
+            defaultValue={params.searchTerm} 
+            searchParams={params}
+        />
 
-          {params.categoryId && (
-            <input type="hidden" name="categoryId" value={params.categoryId} />
-          )}
-          {params.minPrice && (
-            <input type="hidden" name="minPrice" value={params.minPrice} />
-          )}
-          {params.maxPrice && (
-            <input type="hidden" name="maxPrice" value={params.maxPrice} />
-          )}
-          {params.sort && <input type="hidden" name="sort" value={params.sort} />}
-          {params.isAvailable && (
-            <input type="hidden" name="isAvailable" value={params.isAvailable} />
-          )}
-          {params.isFeatured && (
-            <input type="hidden" name="isFeatured" value={params.isFeatured} />
-          )}
-
-          <button
-            type="submit"
-            className="rounded-full px-5 py-3 bg-primary text-primary-foreground text-sm"
-          >
-            Search
-          </button>
-        </form>
-
-        {/* Sort */}
-        <form method="GET" className="flex gap-2">
-          {params.searchTerm && (
-            <input type="hidden" name="searchTerm" value={params.searchTerm} />
-          )}
-          {params.categoryId && (
-            <input type="hidden" name="categoryId" value={params.categoryId} />
-          )}
-          {params.minPrice && (
-            <input type="hidden" name="minPrice" value={params.minPrice} />
-          )}
-          {params.maxPrice && (
-            <input type="hidden" name="maxPrice" value={params.maxPrice} />
-          )}
-          {params.isAvailable && (
-            <input type="hidden" name="isAvailable" value={params.isAvailable} />
-          )}
-          {params.isFeatured && (
-            <input type="hidden" name="isFeatured" value={params.isFeatured} />
-          )}
-
-          <select
-            name="sort"
-            defaultValue={params.sort}
-            className="rounded-full border border-border bg-background px-4 py-3 text-sm"
-          >
-            <option value="">Sort By</option>
-            <option value="price_asc">Price Low → High</option>
-            <option value="price_desc">Price High → Low</option>
-            <option value="newest">Newest</option>
-            <option value="rating_desc">Top Rated</option>
-          </select>
-
-          <button
-            type="submit"
-            className="rounded-full px-4 py-3 bg-primary text-primary-foreground text-sm"
-          >
-            Apply
-          </button>
-        </form>
+        <MealSort sortValue={params.sort} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-8">

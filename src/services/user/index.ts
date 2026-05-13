@@ -86,3 +86,26 @@ export const updateUserProfile = async (
     };
   }
 };
+
+export const getCustomerDashboardStats = async () => {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    const res = await fetch(`${API_URL}/users/me/dashboard-stats`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+    return data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to fetch dashboard stats",
+      data: null,
+    };
+  }
+};
